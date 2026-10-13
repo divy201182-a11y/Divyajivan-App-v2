@@ -4081,7 +4081,7 @@ return(
 )};
 
 /* ── MAIN APP ── */
-const APP_VERSION='5.7.0';
+const APP_VERSION='5.7.1';
 
 
 const UpdatePopup=({onUpdate,onSkip,darkMode})=>(
@@ -4657,12 +4657,9 @@ const[authChecked,setAuthChecked]=useState(false);
 const[authScreen,setAuthScreen]=useState('welcome');
 useEffect(()=>{
 firebaseAuth.getRedirectResult().then(result=>{
-if(result&&result.user){const user=sb.auth._fromFirebase(result.user);sb.auth._sess(user);setAuthUser(user);setAuthScreen('welcome');}
-}).catch(()=>{});
-sb.auth.getSession().then(({data:{session}})=>{
-if(session?.user)setAuthUser(session.user);
-setAuthChecked(true);
-});
+if(result&&result.user){const user=sb.auth._fromFirebase(result.user);sb.auth._sess(user);setAuthUser(user);setAuthScreen('welcome');setAuthChecked(true);}
+else{sb.auth.getSession().then(({data:{session}})=>{if(session?.user)setAuthUser(session.user);setAuthChecked(true)});}
+}).catch(()=>{sb.auth.getSession().then(({data:{session}})=>{if(session?.user)setAuthUser(session.user);setAuthChecked(true)});});
 const{data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>{
 if(session?.user){setAuthUser(session.user);setAuthScreen('welcome')}
 else setAuthUser(null);
