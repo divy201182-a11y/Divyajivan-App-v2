@@ -14,9 +14,15 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyCOl5aemdixs0xMxgzkn9u1i7FrlK9DfZU",authDomain:"divyajivan-32833.firebaseapp.com",projectId:"divyajivan-32833",storageBucket:"divyajivan-32833.firebasestorage.app",messagingSenderId:"1006742072012",appId:"1:1006742072012:web:a0a38e2734227e62373069"});
+const firebaseAuth=firebase.auth();
+const googleProvider=new firebase.auth.GoogleAuthProvider();
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet">
@@ -3776,10 +3782,20 @@ return(
 </div>
 );};
 
-/* ── SUPABASE AUTH ── */
-const SUPABASE_URL='https://mdprudvwdioioaxoadko.supabase.co';
-const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kcHJ1ZHZ3ZGlvaW9heG9hZGtvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1NzgyNTcsImV4cCI6MjEwNjE1NDI1N30.9sYNbtnftHqYxvJBtvMfBLx-FtDx38RAyeurkMaTp2Y';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+/* ── LOCAL AUTH (offline-first) ── */
+const sb={auth:{
+_k:'dj_accounts',_s:'dj_session',
+_users(){try{return JSON.parse(localStorage.getItem(this._k)||'{}')}catch(e){return{}}},
+_save(u){try{localStorage.setItem(this._k,JSON.stringify(u))}catch(e){}},
+_sess(u){try{localStorage.setItem(this._s,JSON.stringify(u))}catch(e){}},
+getSession(){try{const u=JSON.parse(localStorage.getItem(this._s));return Promise.resolve({data:{session:u?{user:u}:null}})}catch(e){return Promise.resolve({data:{session:null}})}},
+signInWithPassword({email,password}){const all=this._users();const u=all[email.toLowerCase()];if(!u)return{data:null,error:{message:'No account found with this email. Please create an account first.'}};if(u.pw!==password)return{data:null,error:{message:'Incorrect password. Please try again.'}};const user={id:u.id,email:u.email,user_metadata:u.meta};this._sess(user);return{data:{user},error:null}},
+signUp({email,password,options}){const all=this._users();const key=email.toLowerCase();if(all[key])return{data:null,error:{message:'An account with this email already exists. Please login instead.'}};const id='user_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);const meta=options?.data||{};all[key]={id,email:key,pw:password,meta};this._save(all);return{data:{user:{id,email:key,user_metadata:meta}},error:null}},
+async signInWithGoogle(){try{const result=await firebaseAuth.signInWithPopup(googleProvider);const gu=result.user;const user={id:gu.uid,email:gu.email,user_metadata:{full_name:gu.displayName||'',avatar_url:gu.photoURL||''}};this._sess(user);if(this._oauthCb)this._oauthCb('SIGNED_IN',{user});return{data:{user},error:null}}catch(e){return{data:null,error:{message:e.message||'Google sign-in failed'}}}},
+signOut(){try{localStorage.removeItem(this._s)}catch(e){}if(this._oauthCb)this._oauthCb('SIGNED_OUT',null);return Promise.resolve({error:null})},
+resetPasswordForEmail(email){const all=this._users();if(!all[email.toLowerCase()])return{error:{message:'No account found with this email.'}};return{error:null}},
+onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()=>{this._oauthCb=null}}}}}
+}};
 
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
@@ -3878,8 +3894,10 @@ setLoading(false);
 };
 
 const handleGoogle=async()=>{
-const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
-if(error)setError(error.message);
+setError('');
+const{data,error}=await sb.auth.signInWithGoogle();
+if(error){setError(error.message);return}
+if(data?.user)onSuccess(data.user);
 };
 
 return(
@@ -3929,8 +3947,10 @@ const[error,setError]=useState('');
 const[step,setStep]=useState('form');
 
 const handleGoogle=async()=>{
-const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin}});
-if(error)setError(error.message);
+setError('');
+const{data,error}=await sb.auth.signInWithGoogle();
+if(error){setError(error.message);return}
+if(data?.user&&sb.auth._oauthCb)sb.auth._oauthCb('SIGNED_IN',{user:data.user});
 };
 const handleSignup=async(e)=>{
 e.preventDefault();setError('');
@@ -4638,8 +4658,6 @@ const[authUser,setAuthUser]=useState(null);
 const[authChecked,setAuthChecked]=useState(false);
 const[authScreen,setAuthScreen]=useState('welcome');
 useEffect(()=>{
-const isLocal=window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1';
-if(isLocal){setAuthUser({id:'local-dev-user',email:'dev@localhost',user_metadata:{full_name:'Dev User'}});setAuthChecked(true);return;}
 sb.auth.getSession().then(({data:{session}})=>{
 if(session?.user)setAuthUser(session.user);
 setAuthChecked(true);
