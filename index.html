@@ -3793,7 +3793,7 @@ getSession(){try{const u=JSON.parse(localStorage.getItem(this._s));return Promis
 signInWithPassword({email,password}){const all=this._users();const u=all[email.toLowerCase()];if(!u)return{data:null,error:{message:'No account found with this email. Please create an account first.'}};if(u.pw!==password)return{data:null,error:{message:'Incorrect password. Please try again.'}};const user={id:u.id,email:u.email,user_metadata:u.meta};this._sess(user);return{data:{user},error:null}},
 signUp({email,password,options}){const all=this._users();const key=email.toLowerCase();if(all[key])return{data:null,error:{message:'An account with this email already exists. Please login instead.'}};const id='user_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);const meta=options?.data||{};all[key]={id,email:key,pw:password,meta};this._save(all);return{data:{user:{id,email:key,user_metadata:meta}},error:null}},
 _fromFirebase(gu){return{id:gu.uid,email:gu.email,user_metadata:{full_name:gu.displayName||'',avatar_url:gu.photoURL||''}}},
-signInWithGoogle(){firebaseAuth.signInWithRedirect(googleProvider);},
+async signInWithGoogle(){const result=await firebaseAuth.signInWithPopup(googleProvider);const user=this._fromFirebase(result.user);this._sess(user);if(this._oauthCb)this._oauthCb('SIGNED_IN',{user});return user;},
 async signOut(){try{localStorage.removeItem(this._s)}catch(e){}try{await firebaseAuth.signOut()}catch(e){}if(this._oauthCb)this._oauthCb('SIGNED_OUT',null);return{error:null}},
 resetPasswordForEmail(email){const all=this._users();if(!all[email.toLowerCase()])return{error:{message:'No account found with this email.'}};return{error:null}},
 onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()=>{this._oauthCb=null}}}}}
@@ -3895,9 +3895,9 @@ onSuccess(data.user);
 setLoading(false);
 };
 
-const handleGoogle=()=>{
+const handleGoogle=async()=>{
 setError('');
-sb.auth.signInWithGoogle();
+try{const user=await sb.auth.signInWithGoogle();if(user)onSuccess(user);}catch(e){if(e.code!=='auth/popup-closed-by-user')setError(e.message||'Google sign-in failed');}
 };
 
 return(
@@ -3946,9 +3946,9 @@ const[loading,setLoading]=useState(false);
 const[error,setError]=useState('');
 const[step,setStep]=useState('form');
 
-const handleGoogle=()=>{
+const handleGoogle=async()=>{
 setError('');
-sb.auth.signInWithGoogle();
+try{await sb.auth.signInWithGoogle();}catch(e){if(e.code!=='auth/popup-closed-by-user')setError(e.message||'Google sign-in failed');}
 };
 const handleSignup=async(e)=>{
 e.preventDefault();setError('');
@@ -4081,7 +4081,7 @@ return(
 )};
 
 /* ── MAIN APP ── */
-const APP_VERSION='5.7.1';
+const APP_VERSION='5.7.2';
 
 
 const UpdatePopup=({onUpdate,onSkip,darkMode})=>(
@@ -4656,10 +4656,10 @@ const[authUser,setAuthUser]=useState(null);
 const[authChecked,setAuthChecked]=useState(false);
 const[authScreen,setAuthScreen]=useState('welcome');
 useEffect(()=>{
-firebaseAuth.getRedirectResult().then(result=>{
-if(result&&result.user){const user=sb.auth._fromFirebase(result.user);sb.auth._sess(user);setAuthUser(user);setAuthScreen('welcome');setAuthChecked(true);}
-else{sb.auth.getSession().then(({data:{session}})=>{if(session?.user)setAuthUser(session.user);setAuthChecked(true)});}
-}).catch(()=>{sb.auth.getSession().then(({data:{session}})=>{if(session?.user)setAuthUser(session.user);setAuthChecked(true)});});
+sb.auth.getSession().then(({data:{session}})=>{
+if(session?.user)setAuthUser(session.user);
+setAuthChecked(true);
+});
 const{data:{subscription}}=sb.auth.onAuthStateChange((event,session)=>{
 if(session?.user){setAuthUser(session.user);setAuthScreen('welcome')}
 else setAuthUser(null);
