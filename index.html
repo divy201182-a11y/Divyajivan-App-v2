@@ -559,11 +559,17 @@ const SectionHead=({title,action,onAction})=>(
 </div>
 );
 
-const CatIcon=({icon,label,color,bg,size=52,onClick})=>(
+const ICON_POS={'medicines':'0% 0%','full-body-checkup':'25% 0%','diabetes-care':'50% 0%','heart-care':'75% 0%','pain-relief':'100% 0%','fever-cold':'0% 50%','skin-care':'25% 50%','personal-care':'50% 50%','womens-health':'75% 50%','senior-care':'100% 50%','thyroid':'0% 100%','health-checkups':'25% 100%'};
+const HIcon=({name,size=52})=>(
+<div className="rounded-2xl overflow-hidden" style={{width:size,height:size,backgroundImage:'url(health-icons.svg)',backgroundSize:'500% 300%',backgroundPosition:ICON_POS[name]||'0% 0%'}}/>
+);
+
+const CatIcon=({icon,label,color,bg,sprite,size=52,onClick})=>(
 <button onClick={onClick} className="flex flex-col items-center gap-2 w-full">
-<div className="rounded-full flex items-center justify-center overflow-hidden" style={{width:size,height:size,backgroundColor:bg}}>
+{sprite?<HIcon name={sprite} size={size}/>
+:<div className="rounded-full flex items-center justify-center overflow-hidden" style={{width:size,height:size,backgroundColor:bg}}>
 <I name={icon} size={size*0.44} className="" style={{color}}/>
-</div>
+</div>}
 <span className="text-[11px] text-slate-600 font-medium text-center leading-tight">{label}</span>
 </button>
 );
@@ -705,21 +711,21 @@ return(
 <h3 className="text-lg font-bold text-slate-800 mb-1">Lab tests near you</h3>
 <p className="text-sm text-slate-600 leading-relaxed mb-4 max-w-[65%]">Book a test and give your sample at the lab, or at home where it's offered.</p>
 <button onClick={()=>nav('lab-tests')} className="px-5 py-2.5 rounded-full text-white text-sm font-bold" style={{backgroundColor:'#1E293B'}}>Book a test</button>
-<div className="absolute right-3 bottom-3 flex items-end gap-1 opacity-80">
-<div className="w-14 h-16 rounded-xl flex items-center justify-center" style={{backgroundColor:'#DBEAFE'}}><I name="science" size={24} style={{color:'#3B82F6'}}/></div>
-<div className="w-10 h-10 rounded-full flex items-center justify-center" style={{backgroundColor:'#FCE7F3'}}><I name="medication" size={16} style={{color:'#EC4899'}}/></div>
+<div className="absolute right-3 bottom-2">
+<HIcon name="medicines" size={72}/>
 </div>
 </div>
 </div>
 {/* Health checkups - CSS auto scroll loop */}
 {(()=>{
 const hcCards=[
-{name:'Full body checkup',desc:'Head-to-toe screening',icon:'monitor_heart',color:'#059669',bg:'#D1FAE5'},
-{name:'Diabetes care',desc:'Sugar and HbA1c tests',icon:'bloodtype',color:'#D97706',bg:'#FEF3C7'},
-{name:'Heart health',desc:'Heart and cholesterol',icon:'favorite',color:'#EF4444',bg:'#FCE7F3'},
-{name:"Women's health",desc:'Tests made for women',icon:'face_3',color:'#EC4899',bg:'#FCE7F3'},
-{name:'Senior care',desc:'For 60 and above',icon:'accessibility_new',color:'#7C3AED',bg:'#EDE9FE'},
-{name:'Thyroid',desc:'Thyroid profile',icon:'show_chart',color:'#059669',bg:'#D1FAE5'},
+{name:'Full body checkup',desc:'Head-to-toe screening',sprite:'full-body-checkup'},
+{name:'Diabetes care',desc:'Sugar and HbA1c tests',sprite:'diabetes-care'},
+{name:'Heart health',desc:'Heart and cholesterol',sprite:'heart-care'},
+{name:"Women's health",desc:'Tests made for women',sprite:'womens-health'},
+{name:'Senior care',desc:'For 60 and above',sprite:'senior-care'},
+{name:'Thyroid',desc:'Thyroid profile',sprite:'thyroid'},
+{name:'Health checkups',desc:'Full health screening',sprite:'health-checkups'},
 ];
 return(
 <div className="mb-4">
@@ -728,7 +734,7 @@ return(
 <div className="loop-track" style={{gap:'12px',paddingLeft:'16px'}}>
 {[...hcCards,...hcCards].map((c,i)=>(
 <button key={c.name+'_'+i} onClick={()=>nav('lab-tests')} className="bg-white rounded-2xl p-4 text-left border border-slate-100 shadow-sm flex-shrink-0" style={{width:'160px'}}>
-<div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{backgroundColor:c.bg}}><I name={c.icon} size={20} style={{color:c.color}}/></div>
+<div className="mb-3"><HIcon name={c.sprite} size={44}/></div>
 <p className="text-sm font-bold text-slate-800 mb-1">{c.name}</p>
 <p className="text-xs text-slate-500 truncate">{c.desc}</p>
 <p className="text-xs font-medium mt-2" style={{color:'#059669'}}>Price not set yet</p>
@@ -746,16 +752,16 @@ return(
 </div>
 <div className="grid grid-cols-4 gap-3">
 {[
-{name:'Vitamins',icon:'medication_liquid',color:'#D97706',bg:'#FEF3C7'},
-{name:'Diabetes care',icon:'bloodtype',color:'#2563EB',bg:'#DBEAFE'},
-{name:'Heart care',icon:'favorite',color:'#EF4444',bg:'#FEE2E2'},
-{name:'Pain relief',icon:'healing',color:'#059669',bg:'#D1FAE5'},
-{name:'Fever & cold',icon:'thermostat',color:'#EF4444',bg:'#FEE2E2'},
-{name:'Skin care',icon:'spa',color:'#3B82F6',bg:'#DBEAFE'},
-{name:'Personal care',icon:'water_drop',color:'#0EA5E9',bg:'#E0F2FE'},
-{name:"Women's health",icon:'face',color:'#EC4899',bg:'#FCE7F3'},
+{name:'Medicines',sprite:'medicines'},
+{name:'Diabetes care',sprite:'diabetes-care'},
+{name:'Heart care',sprite:'heart-care'},
+{name:'Pain relief',sprite:'pain-relief'},
+{name:'Fever & cold',sprite:'fever-cold'},
+{name:'Skin care',sprite:'skin-care'},
+{name:'Personal care',sprite:'personal-care'},
+{name:"Women's health",sprite:'womens-health'},
 ].map(c=>(
-<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>nav('medicines')}/>
+<CatIcon key={c.name} sprite={c.sprite} label={c.name} onClick={()=>nav('medicines')}/>
 ))}
 </div>
 </div>
