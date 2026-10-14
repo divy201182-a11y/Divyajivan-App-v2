@@ -727,11 +727,11 @@ return(
 <div className="loop-carousel">
 <div className="loop-track" style={{gap:'12px',paddingLeft:'16px'}}>
 {[...hcCards,...hcCards].map((c,i)=>(
-<button key={c.name+'_'+i} onClick={()=>nav('checkup-detail',{name:c.name,desc:c.desc,icon:c.icon,color:c.color,bg:c.bg})} className="bg-white rounded-2xl p-5 text-left border border-slate-100 flex-shrink-0" style={{width:'180px',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
-<div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{backgroundColor:c.bg}}><I name={c.icon} size={26} style={{color:c.color}}/></div>
-<p className="text-[15px] font-bold text-slate-800 mb-1">{c.name}</p>
+<button key={c.name+'_'+i} onClick={()=>nav('checkup-detail',{name:c.name,desc:c.desc,icon:c.icon,color:c.color,bg:c.bg})} className="bg-white rounded-2xl p-4 text-left border border-slate-100 flex-shrink-0" style={{width:'200px',boxShadow:'0 2px 12px rgba(0,0,0,0.06)'}}>
+<div className="w-12 h-12 rounded-xl flex items-center justify-center mb-3" style={{backgroundColor:c.bg}}><I name={c.icon} size={22} style={{color:c.color}}/></div>
+<p className="text-sm font-bold text-slate-800 mb-1">{c.name}</p>
 <p className="text-xs text-slate-500 truncate">{c.desc}</p>
-<p className="text-xs font-medium mt-3" style={{color:'#059669'}}>Price not set yet</p>
+<p className="text-xs font-medium mt-2" style={{color:'#059669'}}>Price not set yet</p>
 </button>
 ))}
 </div>
