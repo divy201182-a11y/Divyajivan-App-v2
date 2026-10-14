@@ -3389,9 +3389,9 @@ savedPolicies.map((p,i)=>(
 
 /* ── SCREEN: TELEMEDICINE ── */
 const UnderDevScreen=({title,icon,onBack})=>(
-<div className="fade-in" style={{background:'#FFFFFF'}}>
+<div className="fade-in" style={{background:'#FFFFFF',height:'100vh',height:'100dvh',display:'flex',flexDirection:'column'}}>
 <SubHeader title={title} onBack={onBack}/>
-<div className="flex flex-col items-center justify-center px-6" style={{minHeight:'60vh'}}>
+<div className="flex-1 flex flex-col items-center justify-center px-6">
 <div className="w-24 h-24 rounded-full bg-amber-50 flex items-center justify-center mb-5">
 <I name={icon} size={44} className="text-amber-500"/>
 </div>
@@ -4981,7 +4981,7 @@ return(
 {isMainTab&&<BottomNav active={screen} onNav={(id)=>{setScreen(id);setDetail(null);setHistory([]);setTimeout(()=>{if(scrollRef.current)scrollRef.current.scrollTop=0},10)}}/>}
 <Toast msg={toast} show={!!toast}/>
 <LocationModal show={showLocModal} onClose={()=>setShowLocModal(false)} location={location} setLocation={setLocation}/>
-{showUpdate&&<UpdatePopup darkMode={darkMode} onUpdate={()=>{try{fetch('version.json?t='+Date.now()).then(r=>r.json()).then(d=>{localStorage.setItem('dj_app_build',d.build);localStorage.setItem('dj_app_version',APP_VERSION)}).catch(()=>{localStorage.setItem('dj_app_version',APP_VERSION)})}catch(e){}window.location.reload()}} onSkip={()=>{try{fetch('version.json?t='+Date.now()).then(r=>r.json()).then(d=>{localStorage.setItem('dj_app_build',d.build);localStorage.setItem('dj_app_version',APP_VERSION)}).catch(()=>{localStorage.setItem('dj_app_version',APP_VERSION)})}catch(e){}setShowUpdate(false)}}/>}
+{showUpdate&&<UpdatePopup darkMode={darkMode} onUpdate={()=>{fetch('version.json?t='+Date.now()).then(r=>r.json()).then(d=>{try{localStorage.setItem('dj_app_build',d.build);localStorage.setItem('dj_app_version',APP_VERSION)}catch(e){}window.location.reload()}).catch(()=>{try{localStorage.setItem('dj_app_version',APP_VERSION)}catch(e){}window.location.reload()})}} onSkip={()=>{fetch('version.json?t='+Date.now()).then(r=>r.json()).then(d=>{try{localStorage.setItem('dj_app_build',d.build);localStorage.setItem('dj_app_version',APP_VERSION)}catch(e){}}).catch(()=>{try{localStorage.setItem('dj_app_version',APP_VERSION)}catch(e){}});setShowUpdate(false)}}/>}
 {isOffline&&<div style={{position:'absolute',inset:0,zIndex:9999,background:'#F5F3EE',display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
 <div style={{background:'#fff',borderRadius:24,padding:'40px 32px',maxWidth:380,width:'100%',boxShadow:'0 2px 20px rgba(0,0,0,0.06)'}}>
 <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:28}}>
