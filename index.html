@@ -526,6 +526,17 @@ Object.keys(toggled).forEach(k=>{if(toggled[k]){const m=meds[k];const freq=getFr
 selected[k]={name:m.name,dose:m.dose,food,duration:dur,days:dd,startDate:new Date().toISOString(),endDate:endDate.toISOString(),times:freq.map(t=>({slot:t,time:times[t]||meals[t]||'8:00 AM'})),active:true}}});
 if(Object.keys(selected).length===0){showToast('Please select at least one medicine');return}
 saveRxReminders(rxId,selected);
+try{const existing=JSON.parse(localStorage.getItem('dj_rem_meds')||'[]');
+const updated=[...existing];
+Object.values(selected).forEach(s=>{
+const nm=s.name.toUpperCase();
+const freqLabel=s.times.length===1?'Once a day':s.times.length===2?'Twice a day':'Three times a day';
+const isSyrup=/syp|syrup|ml/i.test(nm);
+const formType=isSyrup?'Syrup':'Tablet';
+const existIdx=updated.findIndex(m=>m.name===nm);
+const entry={id:existIdx>=0?updated[existIdx].id:Date.now()+Math.random()*1000|0,name:nm,dose:s.dose,freq:freqLabel,when:s.times[0]?.slot||'Morning',food:s.food||'After food',active:true,form:formType,qty:1,doses:s.times.map(t=>({time:t.time})),days:'Every day',duration:s.days?s.days+' days':'5 days',track:true,color:isSyrup?'#BAE6FD':'#93C5FD',notify:true,startDate:s.startDate,endDate:s.endDate};
+if(existIdx>=0)updated[existIdx]=entry;else updated.push(entry)});
+localStorage.setItem('dj_rem_meds',JSON.stringify(updated))}catch(e){}
 if(onSave)onSave(selected);
 const count=Object.keys(selected).length;
 showToast(count===1?'Reminder set for 1 medicine!':'Reminders set for '+count+' medicines!');
