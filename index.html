@@ -424,10 +424,10 @@ const pickGallery=()=>{setShowUpload(false);const inp=document.createElement('in
 const pickFile=()=>{setShowUpload(false);const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.dcm';inp.onchange=()=>showToast('Prescription uploaded!');inp.click()};
 return(
 <div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#F8FAFC 40%)',height:'100vh',height:'100dvh'}}>
-<div className="flex items-center justify-between px-4 py-3" style={{background:'transparent'}}>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'#EFF6FF'}}>
 <div style={{width:'36px'}}></div>
 <h1 className="text-xl font-bold text-slate-800">Prescriptions</h1>
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/60 transition"><I name="close" size={22} className="text-slate-600"/></button>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="close" size={22} className="text-slate-600"/></button>
 </div>
 <div className="flex-1 overflow-y-auto px-4 pb-6" style={{scrollbarWidth:'none'}}>
 <button onClick={()=>setShowUpload(true)} className="w-full py-3.5 rounded-2xl text-white text-base font-bold mb-3 flex items-center justify-center gap-2" style={{backgroundColor:'#2563EB'}}><I name="cloud_upload" size={20}/>Upload prescription</button>
@@ -502,15 +502,153 @@ return(
 </div>
 );};
 
+const TakeCourseSheet=({rx,meds,initOn,onClose,showToast})=>{
+const[toggled,setToggled]=useState(()=>{const m={};(initOn||[]).forEach(i=>{m[i]=true});return m});
+const[food,setFood]=useState('After food');
+const[dur,setDur]=useState('5 days (as prescribed)');
+const[meals,setMeals]=useState({Breakfast:'8:30 AM',Lunch:'1:30 PM',Dinner:'8:30 PM',Bedtime:'10:00 PM'});
+const[times,setTimes]=useState({Morning:'8:00 AM',Afternoon:'2:00 PM',Evening:'6:00 PM',Night:'9:00 PM'});
+const durDays={'3 days':3,'5 days (as prescribed)':5,'7 days':7,'10 days':10,'14 days':14,'30 days':30,'Till required':90};
+const dd=durDays[dur]||5;
+const endDate=new Date();endDate.setDate(endDate.getDate()+dd-1);
+const endStr=endDate.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+const anyOn=Object.values(toggled).some(v=>v);
+const toggle=(i)=>setToggled(p=>({...p,[i]:!p[i]}));
+const getFreq=(dose)=>{const d=dose.toLowerCase();if(d.includes('tds'))return['Morning','Afternoon','Night'];if(d.includes('bd'))return['Morning','Night'];return['Morning']};
+const PillIcon=({syrup})=>(<div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor:syrup?'#E0F2FE':'#FCE4EC'}}><I name={syrup?'local_pharmacy':'medication'} size={22} style={{color:syrup?'#0284C7':'#E11D48'}}/></div>);
+const TimeChip=({label,val})=>(<div className="flex items-center justify-between py-3 border-b border-slate-100"><span className="text-base font-semibold text-slate-800">{label}</span><span className="px-4 py-1.5 rounded-full border border-blue-200 text-sm font-semibold flex items-center gap-1.5" style={{color:'#1565C0',backgroundColor:'#EFF6FF'}}><I name="schedule" size={16}/>{val}<I name="expand_more" size={16}/></span></div>);
+return(
+<div className="fixed inset-0 z-50 flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#F8FAFC 30%)',height:'100vh',height:'100dvh'}}>
+<div className="flex items-center justify-between px-4 py-3">
+<div style={{width:'36px'}}></div>
+<h1 className="text-xl font-bold text-slate-800">Take this course</h1>
+<button onClick={onClose} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="close" size={22} className="text-slate-600"/></button>
+</div>
+<div className="flex-1 overflow-y-auto px-4 pb-28" style={{scrollbarWidth:'none'}}>
+<p className="text-sm text-slate-600 mb-4">Check each medicine, then confirm. It goes into your reminders, and onto your current medication until its last day, so a doctor you see meanwhile knows about it.</p>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-4">
+<h3 className="text-base font-bold text-slate-800 mb-1">Your meal times</h3>
+<p className="text-sm text-slate-500 mb-3">Medicines taken before, with or after food are reminded around these: 30 minutes before or after the meal.</p>
+{Object.entries(meals).map(([k,v])=>(<TimeChip key={k} label={k} val={v}/>))}
+</div>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-4">
+<h3 className="text-base font-bold text-slate-800 mb-1">Your times of day</h3>
+<p className="text-sm text-slate-500 mb-3">For medicines where food does not matter.</p>
+{Object.entries(times).map(([k,v])=>(<TimeChip key={k} label={k} val={v}/>))}
+</div>
+{meds.map((m,i)=>{const isSyrup=m.name.toLowerCase().includes('syp');const isOn=toggled[i];const freq=getFreq(m.dose);return(
+<div key={i} className="bg-white rounded-2xl border mb-3 overflow-hidden" style={{borderColor:isOn?'#2563EB':'#E2E8F0'}}>
+<div className="flex items-center gap-3 p-4">
+<PillIcon syrup={isSyrup}/>
+<p className="flex-1 text-base font-bold text-slate-800">{m.name.split('(')[0].trim()}</p>
+<button onClick={()=>toggle(i)} className="w-12 h-7 rounded-full flex items-center px-1 transition" style={{backgroundColor:isOn?'#2563EB':'#D1D5DB',justifyContent:isOn?'flex-end':'flex-start'}}><div className="w-5 h-5 rounded-full bg-white shadow"></div></button>
+</div>
+{isOn&&<div className="px-4 pb-4 border-t border-slate-100 pt-3">
+{freq.map((t,ti)=>{const tVal=times[t]||meals[t]||'8:00 AM';return(<div key={ti} className="mb-3">
+<div className="flex items-center gap-3 mb-2">
+<span className="px-3 py-1.5 rounded-full border border-blue-200 text-sm font-semibold flex items-center gap-1" style={{color:'#1565C0',backgroundColor:'#EFF6FF'}}><I name="schedule" size={14}/>{tVal}<I name="expand_more" size={14}/></span>
+<div><p className="text-sm text-slate-600">{t} · {food}</p><p className="text-xs text-slate-400">Tap the time to change</p></div>
+</div>
+<div className="flex items-center justify-center gap-4">
+<button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center"><I name="remove" size={18} className="text-slate-500"/></button>
+<span className="text-base font-bold text-slate-800 min-w-[60px] text-center">{m.dose.split('·')[0].trim()}</span>
+<button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center"><I name="add" size={18} className="text-slate-500"/></button>
+<button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center"><I name="close" size={16} className="text-slate-400"/></button>
+</div>
+</div>)})}
+<p className="text-sm font-semibold text-slate-800 mt-2 mb-2">Food</p>
+<div className="flex flex-wrap gap-2 mb-3">
+{['Before food','With food','After food',"Doesn't matter"].map(f=>(<button key={f} onClick={()=>setFood(f)} className={`px-4 py-2 rounded-full text-sm font-medium border transition ${food===f?'text-white border-blue-500':'text-slate-600 border-slate-200 bg-white'}`} style={food===f?{backgroundColor:'#2563EB'}:{}}>{f}</button>))}
+</div>
+<p className="text-sm font-semibold text-slate-800 mb-2">For how long</p>
+<div className="flex flex-wrap gap-2 mb-2">
+{Object.keys(durDays).map(d=>(<button key={d} onClick={()=>setDur(d)} className={`px-4 py-2 rounded-full text-sm font-medium border transition ${dur===d?'text-white border-blue-500':'text-slate-600 border-slate-200 bg-white'}`} style={dur===d?{backgroundColor:'#2563EB'}:{}}>{d}</button>))}
+</div>
+<p className="text-xs text-slate-500">Starts today · Last day {endStr}</p>
+</div>}
+</div>
+)})}
+</div>
+<div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-slate-100" style={{paddingBottom:'max(12px,env(safe-area-inset-bottom,0px))'}}>
+<button onClick={()=>{onClose();showToast('Reminders set for your medicines!')}} className="w-full py-4 rounded-2xl text-white text-base font-bold flex items-center justify-center gap-2" style={{backgroundColor:'#2563EB'}}><I name="alarm" size={20}/>Take this course · starts today</button>
+</div>
+</div>
+);};
+
 const PrescriptionDetailScreen=({item,onBack,showToast})=>{
 const rx=item||SAMPLE_RX;
+const[showCourse,setShowCourse]=useState(false);
+const[courseInit,setCourseInit]=useState([]);
 const Section=({title,children})=>(<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3"><p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{title}</p>{children}</div>);
+const openCourse=(initIdxs)=>{setCourseInit(initIdxs);setShowCourse(true)};
+const downloadPDF=()=>{
+if(!window.jspdf||!window.jspdf.jsPDF){showToast('PDF library not loaded. Please reload.');return}
+const pdf=new window.jspdf.jsPDF('p','mm','a4');
+const W=210,M=15;const CW=W-2*M;let y=15;
+pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.setTextColor(100);
+pdf.text('DIVYAJIVAN HEALTHCARE',M,y);
+pdf.text(rx.date.replace('Mon, ','Mon, ')+' at 7:42 PM',W-M,y,{align:'right'});
+y+=6;pdf.setFont('helvetica','bold');pdf.setFontSize(16);pdf.setTextColor(30);
+pdf.text(rx.doctor,M,y);y+=10;
+pdf.setDrawColor(200);pdf.setFillColor(248,250,252);pdf.roundedRect(M,y,CW,16,2,2,'FD');
+y+=5;pdf.setFontSize(7);pdf.setTextColor(100);pdf.setFont('helvetica','normal');
+const cols=[0,CW*0.25,CW*0.5,CW*0.75];
+['PATIENT','AGE / SEX','BLOOD GROUP','CARD NO.'].forEach((h,i)=>{pdf.text(h,M+cols[i]+3,y)});
+y+=5;pdf.setFontSize(10);pdf.setTextColor(30);pdf.setFont('helvetica','bold');
+[rx.patient,rx.age+' / '+rx.sex.toUpperCase(),rx.blood,rx.card].forEach((v,i)=>{pdf.text(v,M+cols[i]+3,y)});
+y+=9;pdf.setFontSize(8);pdf.setFont('helvetica','bold');pdf.setTextColor(100);
+pdf.text('VITALS',M,y);pdf.setFont('helvetica','normal');pdf.setTextColor(50);
+pdf.text('BP '+rx.vitals.bp+' · Pulse '+rx.vitals.pulse+' · Temp '+rx.vitals.temp+' · SpO2 '+rx.vitals.spo2+' · Resp '+rx.vitals.resp+' · Ht '+rx.vitals.ht+' · Wt '+rx.vitals.wt,M+18,y);
+y+=10;pdf.setFontSize(14);pdf.setFont('helvetica','normal');pdf.setTextColor(30);pdf.text('℞',M,y);
+pdf.setFont('helvetica','bold');pdf.text('Medicines',M+8,y);y+=7;
+pdf.setFillColor(240,240,240);pdf.rect(M,y-4,CW,7,'F');
+pdf.setFontSize(7);pdf.setFont('helvetica','bold');pdf.setTextColor(80);
+pdf.text('MEDICINE',M+10,y);pdf.text('DOSAGE',M+CW*0.6,y);pdf.text('DURATION',M+CW*0.85,y);y+=6;
+pdf.setDrawColor(220);
+rx.meds.forEach((m,i)=>{
+pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(30);
+pdf.text((i+1)+'',M+3,y);
+const nameLines=pdf.splitTextToSize(m.name,CW*0.48);
+nameLines.forEach((ln,li)=>{pdf.text(ln,M+10,y+li*4.5)});
+pdf.setFontSize(8);pdf.setFont('helvetica','normal');pdf.setTextColor(100);
+pdf.text(m.qty,M+10,y+nameLines.length*4.5);
+pdf.setFontSize(9);pdf.setTextColor(50);
+pdf.text(m.dose.replace(/ · /g,' · '),M+CW*0.6,y);
+const durText=m.dose.split('·').pop().trim();
+pdf.text(durText,M+CW*0.85,y);
+y+=nameLines.length*4.5+8;
+pdf.line(M,y-3,M+CW,y-3);
+});
+y+=4;
+const sections=[['COMPLAINTS',rx.complaints,'PERSONAL HISTORY',rx.personalHistory],['PAST HISTORY',rx.pastHistory,'FAMILY HISTORY',rx.familyHistory],['GENERAL EXAMINATION',rx.generalExam,'SYSTEMATIC EXAMINATION',rx.sysExam],['INVESTIGATIONS ADVISED',rx.investigations,'DIAGNOSIS',rx.diagnosis]];
+sections.forEach(([t1,v1,t2,v2])=>{
+if(y>260){pdf.addPage();y=15}
+pdf.setFontSize(7);pdf.setFont('helvetica','bold');pdf.setTextColor(80);
+pdf.text(t1,M,y);pdf.text(t2,M+CW*0.5+3,y);y+=4;
+pdf.setFontSize(9);pdf.setFont('helvetica','normal');pdf.setTextColor(50);
+const l1=pdf.splitTextToSize(v1,CW*0.48);const l2=pdf.splitTextToSize(v2,CW*0.48);
+l1.forEach((ln,i)=>{pdf.text(ln,M,y+i*4)});l2.forEach((ln,i)=>{pdf.text(ln,M+CW*0.5+3,y+i*4)});
+y+=Math.max(l1.length,l2.length)*4+6;
+});
+y+=8;if(y>260){pdf.addPage();y=15}
+pdf.setDrawColor(180);pdf.line(M+CW*0.6,y,M+CW,y);y+=6;
+pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(30);
+pdf.text(rx.doctor,M+CW,y,{align:'right'});y+=5;
+pdf.setFontSize(9);pdf.setFont('helvetica','normal');pdf.setTextColor(80);
+pdf.text('MD (Medicine)',M+CW,y,{align:'right'});y+=4;
+pdf.text('Reg. No. '+rx.regNo+' · Gujarat Medical Council',M+CW,y,{align:'right'});y+=10;
+pdf.setDrawColor(200);pdf.line(M,y,M+CW,y);y+=4;
+pdf.setFontSize(7);pdf.setTextColor(100);
+pdf.text('Digital prescription generated from your DivyaJivan record · Membership DJH000190076.',M,y);
+pdf.save('Prescription_'+rx.patient.replace(/ /g,'_')+'_'+rx.dateShort.replace(/ /g,'')+'.pdf');
+showToast('PDF downloaded!');
+};
 return(
 <div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#F8FAFC 0%,#F1F5F9 100%)',height:'100vh',height:'100dvh'}}>
-<div className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-50 transition"><I name="arrow_back_ios_new" size={18} className="text-slate-800"/></button>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'#EFF6FF',borderBottom:'1px solid #DBEAFE'}}>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="arrow_back_ios_new" size={18} className="text-slate-800"/></button>
 <h1 className="text-lg font-bold text-slate-800">Prescription</h1>
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-50 transition"><I name="close" size={20} className="text-slate-600"/></button>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="close" size={20} className="text-slate-600"/></button>
 </div>
 <div className="flex-1 overflow-y-auto px-4 pt-4 pb-24" style={{scrollbarWidth:'none'}}>
 <div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
@@ -538,7 +676,7 @@ return(
 <div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
 <h3 className="text-base font-bold text-slate-800 mb-1">Taking these medicines?</h3>
 <p className="text-sm text-slate-500 mb-3">Set reminders for the course. Each one also shows on your current medication until its last day.</p>
-<button className="w-full py-3 rounded-xl border border-blue-200 flex items-center justify-center gap-2" style={{backgroundColor:'#EFF6FF'}}><I name="alarm" size={18} style={{color:'#1565C0'}}/><span className="text-sm font-semibold" style={{color:'#1565C0'}}>Add all to reminders</span></button>
+<button onClick={()=>openCourse(rx.meds.map((_,i)=>i))} className="w-full py-3 rounded-xl border border-blue-200 flex items-center justify-center gap-2" style={{backgroundColor:'#EFF6FF'}}><I name="alarm" size={18} style={{color:'#1565C0'}}/><span className="text-sm font-semibold" style={{color:'#1565C0'}}>Add all to reminders</span></button>
 </div>
 <div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
 <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Medicines</p>
@@ -548,7 +686,7 @@ return(
 <div className="flex-1">
 <p className="text-sm font-bold text-slate-800 mb-1">{m.name}</p>
 <p className="text-xs text-slate-400">{m.dose} · {m.qty}</p>
-<button className="flex items-center gap-1 mt-1.5"><I name="alarm" size={14} style={{color:'#1565C0'}}/><span className="text-xs font-semibold" style={{color:'#1565C0'}}>Take this course</span></button>
+<button onClick={()=>openCourse([i])} className="flex items-center gap-1 mt-1.5"><I name="alarm" size={14} style={{color:'#1565C0'}}/><span className="text-xs font-semibold" style={{color:'#1565C0'}}>Take this course</span></button>
 </div>
 </div>
 </div>))}
@@ -563,9 +701,10 @@ return(
 <Section title="Diagnosis"><p className="text-sm text-slate-700">{rx.diagnosis}</p></Section>
 </div>
 <div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-slate-100 flex gap-3" style={{paddingBottom:'max(12px,env(safe-area-inset-bottom,0px))'}}>
-<button className="flex-1 py-3 rounded-2xl border border-slate-200 flex items-center justify-center gap-2 text-sm font-bold text-slate-700"><I name="share" size={18}/>Share</button>
-<button onClick={()=>showToast('PDF download coming soon')} className="flex-1 py-3 rounded-2xl border flex items-center justify-center gap-2 text-sm font-bold" style={{borderColor:'#BFDBFE',color:'#1565C0',backgroundColor:'#EFF6FF'}}><I name="download" size={18}/>Download PDF</button>
+<button onClick={()=>{if(navigator.share){navigator.share({title:'Prescription - '+rx.doctor,text:rx.doctor+' - '+rx.date+'\nDiagnosis: '+rx.diagnosis}).catch(()=>{})}else{showToast('Share not supported on this device')}}} className="flex-1 py-3 rounded-2xl border border-slate-200 flex items-center justify-center gap-2 text-sm font-bold text-slate-700"><I name="share" size={18}/>Share</button>
+<button onClick={downloadPDF} className="flex-1 py-3 rounded-2xl border flex items-center justify-center gap-2 text-sm font-bold" style={{borderColor:'#BFDBFE',color:'#1565C0',backgroundColor:'#EFF6FF'}}><I name="download" size={18}/>Download PDF</button>
 </div>
+{showCourse&&<TakeCourseSheet rx={rx} meds={rx.meds} initOn={courseInit} onClose={()=>setShowCourse(false)} showToast={showToast}/>}
 </div>
 );};
 
@@ -4253,7 +4392,7 @@ return(
 )};
 
 /* ── MAIN APP ── */
-const APP_VERSION='5.9.0';
+const APP_VERSION='5.9.1';
 
 
 const UpdatePopup=({onUpdate,onSkip,darkMode})=>(
