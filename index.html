@@ -727,7 +727,7 @@ return(
 <div className="loop-carousel">
 <div className="loop-track" style={{gap:'12px',paddingLeft:'16px'}}>
 {[...hcCards,...hcCards].map((c,i)=>(
-<button key={c.name+'_'+i} onClick={()=>nav('lab-tests')} className="bg-white rounded-2xl p-4 text-left border border-slate-100 shadow-sm flex-shrink-0" style={{width:'160px'}}>
+<button key={c.name+'_'+i} onClick={()=>nav('checkup-detail',{name:c.name,desc:c.desc,icon:c.icon,color:c.color,bg:c.bg})} className="bg-white rounded-2xl p-4 text-left border border-slate-100 shadow-sm flex-shrink-0" style={{width:'160px'}}>
 <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{backgroundColor:c.bg}}><I name={c.icon} size={20} style={{color:c.color}}/></div>
 <p className="text-sm font-bold text-slate-800 mb-1">{c.name}</p>
 <p className="text-xs text-slate-500 truncate">{c.desc}</p>
@@ -755,7 +755,7 @@ return(
 {name:'Personal care',icon:'water_drop',color:'#0EA5E9',bg:'#E0F2FE'},
 {name:"Women's health",icon:'face',color:'#EC4899',bg:'#FCE7F3'},
 ].map(c=>(
-<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>nav('medicines')}/>
+<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>nav('med-cat-detail',{name:c.name,icon:c.icon,color:c.color,bg:c.bg})}/>
 ))}
 </div>
 </div>
@@ -3404,6 +3404,57 @@ const UnderDevScreen=({title,icon,onBack})=>(
 </div>
 </div>
 );
+/* ── SCREEN: CHECKUP COMING SOON ── */
+const CheckupComingSoonScreen=({item,onBack})=>(
+<div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#F8FAFC 40%)',height:'100vh',height:'100dvh'}}>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'transparent'}}>
+<div style={{width:'36px'}}></div>
+<h1 className="text-lg font-bold text-slate-800">{item?.name||'Checkup'}</h1>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="close" size={20} className="text-slate-600"/></button>
+</div>
+<div className="flex-1 overflow-y-auto px-5 pt-4 pb-6" style={{scrollbarWidth:'none'}}>
+<div className="flex items-center gap-4 mb-6">
+<div className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0" style={{backgroundColor:item?.bg||'#DBEAFE'}}><I name={item?.icon||'monitor_heart'} size={28} style={{color:item?.color||'#3B82F6'}}/></div>
+<div><h2 className="text-xl font-bold text-slate-800">{item?.name||'Checkup'}</h2><p className="text-sm text-slate-500 mt-0.5">{item?.desc||''}</p></div>
+</div>
+<div className="bg-white rounded-2xl p-5 border border-slate-100 mb-4">
+<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Price</p>
+<p className="text-lg font-bold text-slate-700">Price not set yet</p>
+</div>
+<div className="bg-white rounded-2xl p-5 border border-slate-100 mb-6">
+<h3 className="text-base font-bold text-slate-800 mb-1">What's included</h3>
+<p className="text-sm text-slate-500">Details coming soon.</p>
+</div>
+</div>
+<div className="px-5 pb-5 bg-transparent" style={{paddingBottom:'max(20px,env(safe-area-inset-bottom,0px))'}}>
+<button className="w-full py-4 rounded-2xl text-white text-base font-bold mb-3" style={{backgroundColor:'#2563EB'}}>Book this checkup</button>
+<p className="text-sm text-slate-500 text-center">Online booking is coming soon. <span className="text-xs font-bold px-2.5 py-1 rounded-full ml-1" style={{backgroundColor:'#FEF3C7',color:'#92400E'}}>Coming soon</span></p>
+</div>
+</div>
+);
+
+/* ── SCREEN: MEDICINE CATEGORY COMING SOON ── */
+const MedCategoryComingSoonScreen=({item,onBack})=>(
+<div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#F8FAFC 0%,#F1F5F9 100%)',height:'100vh',height:'100dvh'}}>
+<div className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
+<div style={{width:'36px'}}></div>
+<h1 className="text-lg font-bold text-slate-800">{item?.name||'Category'}</h1>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm hover:bg-slate-50 transition"><I name="close" size={20} className="text-slate-600"/></button>
+</div>
+<div className="px-5 py-3 flex items-center gap-2">
+<p className="text-sm text-slate-500">Ordering online is coming soon.</p>
+<span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{backgroundColor:'#FEF3C7',color:'#92400E'}}>Coming soon</span>
+</div>
+<div className="flex-1 flex flex-col items-center justify-center px-6">
+<div className="w-20 h-20 rounded-full flex items-center justify-center mb-5" style={{backgroundColor:item?.bg||'#E0F2FE'}}>
+<I name={item?.icon||'add_shopping_cart'} size={32} style={{color:item?.color||'#0EA5E9'}}/>
+</div>
+<h2 className="text-xl font-bold text-slate-800 mb-2">No medicines here yet</h2>
+<p className="text-sm text-slate-500 text-center leading-relaxed">Medicines will appear here when DivyaJivan adds them.</p>
+</div>
+</div>
+);
+
 const TelemedicineScreen=({onBack,nav})=>{
 return(
 <div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#FFFFFF 40%)',height:'100vh',height:'100dvh'}}>
@@ -4862,6 +4913,8 @@ case 'order-detail':return detail?<OrderDetailScreen onBack={goBack} order={deta
 case 'membership':return <MembershipScreen onBack={goBack}/>;
 case 'insurance':return <InsuranceScreen onBack={goBack} showToast={showToast}/>;
 case 'telemedicine':return <TelemedicineScreen onBack={goBack} nav={nav}/>;
+case 'checkup-detail':return <CheckupComingSoonScreen item={detail} onBack={goBack}/>;
+case 'med-cat-detail':return <MedCategoryComingSoonScreen item={detail} onBack={goBack}/>;
 case 'medical-tourism':return <MedicalTourismScreen onBack={goBack} showToast={showToast}/>;
 case 'upload-prescription':return <UploadPrescriptionScreen onBack={goBack} showToast={showToast}/>;
 case 'points':return <JivanPointsScreen onBack={goBack} nav={nav} points={points}/>;
