@@ -4891,7 +4891,7 @@ showToast('Order placed successfully!'+(pointsDiscount>0?' Saved ₹'+pointsDisc
 setScreen('my-orders');
 };
 
-const mainTabs=['home','medicines','lab-tests','consult','profile'];
+const mainTabs=['home','medicines','health-records','consult','profile'];
 const isMainTab=mainTabs.includes(screen);
 const cartCount=cart.reduce((s,c)=>s+c.qty,0);
 
