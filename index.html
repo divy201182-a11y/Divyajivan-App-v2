@@ -3407,7 +3407,11 @@ const UnderDevScreen=({title,icon,onBack})=>(
 const TelemedicineScreen=({onBack,nav})=>{
 return(
 <div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#FFFFFF 40%)',height:'100vh',height:'100dvh'}}>
-<SubHeader title="Telemedicine" onBack={onBack}/>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'transparent'}}>
+<div style={{width:'36px'}}></div>
+<h1 className="text-xl font-bold text-slate-800">Telemedicine</h1>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/60 transition"><I name="close" size={22} className="text-slate-600"/></button>
+</div>
 <div className="flex-1 overflow-y-auto pb-4" style={{scrollbarWidth:'none',msOverflowStyle:'none'}}>
 {/* Rocket illustration */}
 <div className="flex flex-col items-center pt-6 pb-2 px-6">
