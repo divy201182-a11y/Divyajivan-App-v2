@@ -399,39 +399,40 @@ return(
 );};
 
 /* Upload Prescription Screen */
-const UploadPrescriptionScreen=({onBack,showToast})=>{
-const fileRef=useRef(null);
-const[uploads,setUploads]=useState([]);
-const[reviewing,setReviewing]=useState(false);
-const[showPicker,setShowPicker]=useState(false);
-const handleFile=(e)=>{
-const files=Array.from(e.target.files||[]);
-files.forEach(f=>{
-const reader=new FileReader();
-reader.onload=()=>setUploads(prev=>[...prev,{name:f.name,size:(f.size/1024).toFixed(1)+'KB',type:f.type,preview:reader.result,id:Date.now()+Math.random()}]);
-reader.readAsDataURL(f);
-});
-if(fileRef.current)fileRef.current.value='';
-};
-const takePhoto=()=>{
-setShowPicker(false);
-const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
-inp.onchange=(e)=>handleFile(e);inp.click();
-};
-const uploadFiles=()=>{
-setShowPicker(false);
-const inp=document.createElement('input');inp.type='file';inp.accept='image/*,.pdf,.jpg,.jpeg,.png';inp.multiple=true;
-inp.onchange=(e)=>handleFile(e);inp.click();
-};
-const submitPrescription=()=>{
-if(uploads.length===0){showToast('Please upload a prescription first');return}
-setReviewing(true);
-setTimeout(()=>{setReviewing(false);showToast('Prescription submitted for pharmacist review!');setUploads([])},2000);
-};
+const SAMPLE_RX={doctor:'Dr. Parshottam Koradia',regNo:'G-12943',initials:'PK',date:'Mon, 24 Aug 2026',dateShort:'24 Aug',patient:'Divy Koradia',age:'15 yrs',sex:'Male',blood:'B+',card:'110070107',diagnosis:'Acute viral fever',complaints:'Fever',
+vitals:{bp:'118/68',pulse:'96',temp:'98.6 °F',spo2:'99',resp:'15',ht:'182',wt:'70.0'},
+meds:[
+{name:'Dolo 500 Tablet (Paracetamol (500mg))',dose:'1 tab · BD · After food · 5 Days',qty:'Qty 10'},
+{name:'Aady 500mg Tablet (Azithromycin (500mg))',dose:'1 tab · OD · After food · 5 Days',qty:'Qty 5'},
+{name:'ALLERCET DC TAB (CETIRIZINE 10 MG+PHENYLEPHRINE 10 MG)',dose:'1 tab · BD · After food · 5 Days',qty:'Qty 10'},
+{name:'TUSQ DX 100 ML SYP (DEXTROMETHORPHAN HYDROBROMIDE 15 MG+CHLORPHENIRAMINE MALEATE 2 MG+PHENYLEPHRINE)',dose:'20 ml · TDS · After food · 5 Days',qty:'Qty 1'},
+],
+personalHistory:'Appetite: Normal · Sleep: Normal · Bowel habit: Normal · Bladder: Normal · Addiction: None · Allergy history: None known · Sleep-apnea symptoms: None · Diet: Jain / Swaminarayan',
+pastHistory:'No significant past history',familyHistory:'No significant family history',
+generalExam:'General appearance: Normal · Build: Normal · Pallor: Absent · Icterus: Absent · Cyanosis: Absent · Clubbing: Absent · Lymphadenopathy: Absent · Pedal edema: Absent · JVP: Normal · Skin: Normal',
+sysExam:'CNS: Normal · PA — Per Abdomen: Soft, non-tender · RS: BAE present, normal breath sound · CVS: Normal S1 S2, no murmurs',
+investigations:'Complete Blood Count (CBC) · RBS · LFT · Vitamin B12 · ECG'};
+
+const PrescriptionsScreen=({onBack,nav,showToast})=>{
+const[showUpload,setShowUpload]=useState(false);
+const[showLang,setShowLang]=useState(false);
+const[lang,setLang]=useState('English');
+const[title,setTitle]=useState('');
+const rx=SAMPLE_RX;
+const takePhoto=()=>{setShowUpload(false);const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';inp.onchange=()=>showToast('Prescription uploaded!');inp.click()};
+const pickGallery=()=>{setShowUpload(false);const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=()=>showToast('Prescription uploaded!');inp.click()};
+const pickFile=()=>{setShowUpload(false);const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.dcm';inp.onchange=()=>showToast('Prescription uploaded!');inp.click()};
 return(
-<div className="fade-in" style={{background:'#FFFFFF'}}>
-<SubHeader title="Upload Prescription" onBack={onBack}/>
-<div className="px-4">
+<div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#EFF6FF 0%,#F8FAFC 40%)',height:'100vh',height:'100dvh'}}>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'transparent'}}>
+<div style={{width:'36px'}}></div>
+<h1 className="text-xl font-bold text-slate-800">Prescriptions</h1>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/60 transition"><I name="close" size={22} className="text-slate-600"/></button>
+</div>
+<div className="flex-1 overflow-y-auto px-4 pb-6" style={{scrollbarWidth:'none'}}>
+<button onClick={()=>setShowUpload(true)} className="w-full py-3.5 rounded-2xl text-white text-base font-bold mb-3 flex items-center justify-center gap-2" style={{backgroundColor:'#2563EB'}}><I name="cloud_upload" size={20}/>Upload prescription</button>
+<button className="w-full py-3.5 rounded-2xl text-slate-700 text-base font-semibold mb-3 flex items-center justify-center gap-2 bg-white border border-slate-200"><I name="sms" size={20} className="text-slate-500"/>Message your doctor</button>
+<button onClick={()=>setShowLang(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-slate-200 mb-4"><I name="translate" size={18} className="text-slate-500"/><span className="text-sm text-slate-700">Prescription language: {lang}</span><I name="expand_more" size={18} className="text-slate-400"/></button>
 <div className="rounded-2xl p-4 mb-4" style={{background:'linear-gradient(135deg,#ECFDF5 0%,#D1FAE5 100%)'}}>
 <h3 className="text-base font-bold text-pri-800 mb-1">How it works</h3>
 <div className="space-y-2 mt-2">
@@ -443,52 +444,20 @@ return(
 ))}
 </div>
 </div>
-<div className="relative mb-4">
-<button onClick={()=>setShowPicker(!showPicker)} className="w-full py-3.5 bg-pri-600 hover:bg-pri-700 text-white text-base font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-2">
-<I name="upload_file" size={22}/> Upload Prescription
-</button>
-{showPicker&&(
-<div className="absolute left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-slate-100 p-3 z-20">
-{[{icon:'photo_camera',label:'Take Photo',sub:'Use camera to capture',fn:takePhoto,color:'#3B82F6',bg:'#EFF6FF'},
-{icon:'upload_file',label:'Upload Files',sub:'Images, docs & PDFs',fn:uploadFiles,color:'#059669',bg:'#ECFDF5'}
-].map(o=>(
-<button key={o.label} onClick={o.fn} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition">
-<div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor:o.bg}}>
-<I name={o.icon} size={22} style={{color:o.color}}/>
+<button onClick={()=>nav('rx-detail',rx)} className="w-full bg-white rounded-2xl p-4 text-left border border-slate-100 mb-4" style={{boxShadow:'0 1px 6px rgba(0,0,0,0.04)'}}>
+<div className="flex items-start gap-3 mb-3">
+<div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{backgroundColor:'#ECFDF5'}}><I name="description" size={20} style={{color:'#059669'}}/></div>
+<div className="flex-1 min-w-0"><p className="text-base font-bold text-slate-800">{rx.doctor}</p></div>
+<span className="text-xs text-slate-400 flex-shrink-0">{rx.dateShort}</span>
 </div>
-<div className="text-left">
-<p className="text-sm font-semibold text-slate-800">{o.label}</p>
-<p className="text-xs text-slate-400">{o.sub}</p>
+<p className="text-sm text-slate-600 mb-3"><span className="font-semibold text-slate-700">Diagnosis:</span> {rx.diagnosis}</p>
+<div className="border-t border-slate-100 pt-3">
+{rx.meds.slice(0,3).map((m,i)=>(<div key={i} className="mb-2"><p className="text-sm font-semibold text-slate-800">{m.name}</p><p className="text-xs text-slate-400">{m.dose}</p></div>))}
+{rx.meds.length>3&&<p className="text-sm font-semibold" style={{color:'#2563EB'}}>+{rx.meds.length-3} more</p>}
 </div>
 </button>
-))}
-</div>
-)}
-</div>
-{uploads.length>0&&(
-<div className="mb-4">
-<h4 className="text-sm font-bold text-slate-800 mb-2">Uploaded ({uploads.length})</h4>
-<div className="space-y-2">
-{uploads.map(u=>(
-<div key={u.id} className="flex items-center gap-3 bg-slate-50 rounded-xl p-3 border border-slate-100">
-{u.type&&u.type.startsWith('image')?
-<img src={u.preview} className="w-12 h-12 rounded-lg object-cover"/>:
-<div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center"><I name="picture_as_pdf" size={24} className="text-red-500"/></div>
-}
-<div className="flex-1 min-w-0">
-<p className="text-sm font-medium text-slate-700 truncate">{u.name}</p>
-<p className="text-xs text-slate-400">{u.size}</p>
-</div>
-<button onClick={()=>setUploads(prev=>prev.filter(x=>x.id!==u.id))} className="p-1"><I name="close" size={18} className="text-slate-400"/></button>
-</div>
-))}
-</div>
-</div>
-)}
-<button onClick={submitPrescription} disabled={reviewing} className={`w-full py-3.5 text-white text-base font-bold rounded-2xl shadow-md transition mb-4 ${reviewing?'bg-slate-400':'bg-pri-600 hover:bg-pri-700'}`}>
-{reviewing?'Reviewing prescription...':'Submit Prescription'}
-</button>
-<div className="bg-amber-50 rounded-xl p-3 mb-6 border border-amber-100">
+<p className="text-sm text-slate-400 text-center px-4 mb-4">Paper prescriptions you upload appear here and in My records → Prescriptions.</p>
+<div className="bg-amber-50 rounded-xl p-3 mb-2 border border-amber-100">
 <div className="flex items-start gap-2">
 <I name="info" size={18} className="text-amber-600 mt-0.5"/>
 <div>
@@ -497,6 +466,105 @@ return(
 </div>
 </div>
 </div>
+</div>
+{showUpload&&<div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.4)'}} onClick={()=>setShowUpload(false)}>
+<div className="w-full max-w-lg bg-white rounded-t-3xl p-5 pb-8" onClick={e=>e.stopPropagation()}>
+<div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-4"></div>
+<h2 className="text-xl font-bold text-slate-800 mb-1">Upload a prescription</h2>
+<p className="text-sm text-slate-400 mb-4">Adding to: You</p>
+<p className="text-sm font-semibold text-slate-700 mb-1.5">Title</p>
+<input value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Dr Shah — 12 Aug" className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-400 mb-4" style={{boxSizing:'border-box'}}/>
+<div className="grid grid-cols-3 gap-3 mb-4">
+{[{icon:'photo_camera',label:'Take photo',fn:takePhoto},{icon:'collections',label:'Gallery',fn:pickGallery},{icon:'upload_file',label:'PDF / file',fn:pickFile}].map(o=>(
+<button key={o.label} onClick={o.fn} className="flex flex-col items-center gap-2 py-4 rounded-xl border border-slate-200 hover:bg-slate-50 transition">
+<I name={o.icon} size={24} className="text-slate-500"/><span className="text-xs font-medium text-slate-600">{o.label}</span>
+</button>
+))}
+</div>
+<p className="text-xs text-slate-400 mb-4">Photo, PDF, or DICOM (.dcm). Photos/PDF up to 10 MB · DICOM up to 40 MB.</p>
+<button onClick={()=>{setShowUpload(false);showToast('Prescription uploaded!')}} className="w-full py-3.5 rounded-2xl text-white text-base font-bold" style={{backgroundColor:'#93C5FD'}}>Upload</button>
+</div>
+</div>}
+{showLang&&<div className="fixed inset-0 z-50 flex items-end justify-center" style={{background:'rgba(0,0,0,0.4)'}} onClick={()=>setShowLang(false)}>
+<div className="w-full max-w-lg bg-white rounded-t-3xl p-5 pb-8" onClick={e=>e.stopPropagation()}>
+<div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-4"></div>
+<h2 className="text-xl font-bold text-slate-800 mb-4">Prescription language</h2>
+<p className="text-sm font-semibold text-slate-700 mb-2">Prescription language</p>
+<div className="flex flex-wrap gap-2 mb-4">
+{['Auto','English','Eng + ગુજ','ગુજરાતી'].map(l=>(
+<button key={l} onClick={()=>setLang(l)} className={`px-4 py-2 rounded-full text-sm font-medium border transition ${lang===l?'text-white border-blue-500':'text-slate-600 border-slate-200 bg-white'}`} style={lang===l?{backgroundColor:'#2563EB'}:{}}>{l}</button>
+))}
+</div>
+<p className="text-sm text-slate-500 mb-5">The prescriptions you view and download show in this language. Drug names and doses never change.</p>
+<button onClick={()=>setShowLang(false)} className="w-full py-3.5 rounded-2xl text-slate-800 text-base font-bold border border-slate-200">Done</button>
+</div>
+</div>}
+</div>
+);};
+
+const PrescriptionDetailScreen=({item,onBack,showToast})=>{
+const rx=item||SAMPLE_RX;
+const Section=({title,children})=>(<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3"><p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{title}</p>{children}</div>);
+return(
+<div className="fade-in flex flex-col" style={{background:'linear-gradient(180deg,#F8FAFC 0%,#F1F5F9 100%)',height:'100vh',height:'100dvh'}}>
+<div className="flex items-center justify-between px-4 py-3 bg-white border-b border-slate-100">
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-50 transition"><I name="arrow_back_ios_new" size={18} className="text-slate-800"/></button>
+<h1 className="text-lg font-bold text-slate-800">Prescription</h1>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-50 transition"><I name="close" size={20} className="text-slate-600"/></button>
+</div>
+<div className="flex-1 overflow-y-auto px-4 pt-4 pb-24" style={{scrollbarWidth:'none'}}>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
+<div className="flex items-start gap-3 mb-3">
+<div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-base font-bold" style={{backgroundColor:'#FCE4EC',color:'#C62828'}}>{rx.initials}</div>
+<div><p className="text-base font-bold text-slate-800">{rx.doctor}</p><p className="text-sm" style={{color:'#1565C0'}}>Reg. no. {rx.regNo}</p></div>
+</div>
+<div className="flex gap-6 mb-2">
+<div><p className="text-xs font-semibold text-slate-400">Patient</p><p className="text-sm font-bold text-slate-800">{rx.patient}</p></div>
+<div><p className="text-xs font-semibold text-slate-400">Date</p><p className="text-sm font-bold text-slate-800">{rx.date}</p></div>
+</div>
+<p className="text-xs text-slate-400">{rx.age} · {rx.sex} · Blood {rx.blood} · Card {rx.card}</p>
+</div>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
+<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Vitals</p>
+<div className="grid grid-cols-3 gap-2">
+{[{l:'BP',v:rx.vitals.bp},{l:'Pulse',v:rx.vitals.pulse},{l:'Temp',v:rx.vitals.temp},{l:'SpO₂',v:rx.vitals.spo2},{l:'Resp',v:rx.vitals.resp},{l:'Ht',v:rx.vitals.ht},{l:'Wt',v:rx.vitals.wt}].map(vi=>(
+<div key={vi.l} className="rounded-xl p-2.5" style={{backgroundColor:'#FEFCE8'}}>
+<p className="text-[10px] font-semibold text-slate-400 mb-0.5">{vi.l}</p>
+<p className="text-lg font-bold text-slate-800">{vi.v}</p>
+</div>
+))}
+</div>
+</div>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
+<h3 className="text-base font-bold text-slate-800 mb-1">Taking these medicines?</h3>
+<p className="text-sm text-slate-500 mb-3">Set reminders for the course. Each one also shows on your current medication until its last day.</p>
+<button className="w-full py-3 rounded-xl border border-blue-200 flex items-center justify-center gap-2" style={{backgroundColor:'#EFF6FF'}}><I name="alarm" size={18} style={{color:'#1565C0'}}/><span className="text-sm font-semibold" style={{color:'#1565C0'}}>Add all to reminders</span></button>
+</div>
+<div className="bg-white rounded-2xl p-4 border border-slate-100 mb-3">
+<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Medicines</p>
+{rx.meds.map((m,i)=>(<div key={i} className={`pb-3 mb-3 ${i<rx.meds.length-1?'border-b border-slate-100':''}`}>
+<div className="flex items-start gap-3">
+<div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold text-white" style={{backgroundColor:'#1565C0'}}>{i+1}</div>
+<div className="flex-1">
+<p className="text-sm font-bold text-slate-800 mb-1">{m.name}</p>
+<p className="text-xs text-slate-400">{m.dose} · {m.qty}</p>
+<button className="flex items-center gap-1 mt-1.5"><I name="alarm" size={14} style={{color:'#1565C0'}}/><span className="text-xs font-semibold" style={{color:'#1565C0'}}>Take this course</span></button>
+</div>
+</div>
+</div>))}
+</div>
+<Section title="Complaints"><p className="text-sm text-slate-700">{rx.complaints}</p></Section>
+<Section title="Personal history"><p className="text-sm text-slate-700">{rx.personalHistory}</p></Section>
+<Section title="Past history"><p className="text-sm text-slate-700">{rx.pastHistory}</p></Section>
+<Section title="Family history"><p className="text-sm text-slate-700">{rx.familyHistory}</p></Section>
+<Section title="General examination"><p className="text-sm text-slate-700">{rx.generalExam}</p></Section>
+<Section title="Systematic examination"><p className="text-sm text-slate-700">{rx.sysExam}</p></Section>
+<Section title="Investigations advised"><p className="text-sm text-slate-700">{rx.investigations}</p></Section>
+<Section title="Diagnosis"><p className="text-sm text-slate-700">{rx.diagnosis}</p></Section>
+</div>
+<div className="absolute bottom-0 left-0 right-0 px-4 py-3 bg-white border-t border-slate-100 flex gap-3" style={{paddingBottom:'max(12px,env(safe-area-inset-bottom,0px))'}}>
+<button className="flex-1 py-3 rounded-2xl border border-slate-200 flex items-center justify-center gap-2 text-sm font-bold text-slate-700"><I name="share" size={18}/>Share</button>
+<button onClick={()=>showToast('PDF download coming soon')} className="flex-1 py-3 rounded-2xl border flex items-center justify-center gap-2 text-sm font-bold" style={{borderColor:'#BFDBFE',color:'#1565C0',backgroundColor:'#EFF6FF'}}><I name="download" size={18}/>Download PDF</button>
 </div>
 </div>
 );};
@@ -4185,7 +4253,7 @@ return(
 )};
 
 /* ── MAIN APP ── */
-const APP_VERSION='5.8.1';
+const APP_VERSION='5.9.0';
 
 
 const UpdatePopup=({onUpdate,onSkip,darkMode})=>(
@@ -4917,7 +4985,8 @@ case 'telemedicine':return <TelemedicineScreen onBack={goBack} nav={nav}/>;
 case 'checkup-detail':return <CheckupComingSoonScreen item={detail} onBack={goBack}/>;
 case 'med-cat-detail':return <MedCategoryComingSoonScreen item={detail} onBack={goBack}/>;
 case 'medical-tourism':return <MedicalTourismScreen onBack={goBack} showToast={showToast}/>;
-case 'upload-prescription':return <UploadPrescriptionScreen onBack={goBack} showToast={showToast}/>;
+case 'upload-prescription':return <PrescriptionsScreen onBack={goBack} nav={nav} showToast={showToast}/>;
+case 'rx-detail':return <PrescriptionDetailScreen item={detail} onBack={goBack} showToast={showToast}/>;
 case 'points':return <JivanPointsScreen onBack={goBack} nav={nav} points={points}/>;
 case 'points-history':return <PointsHistoryScreen onBack={goBack} points={points}/>;
 case 'points-rules':return <PointsRulesScreen onBack={goBack}/>;
