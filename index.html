@@ -299,7 +299,7 @@ const HOME_SERVICES=[
 {name:'Appointments',icon:'event',color:'#8B5CF6',bg:'#EDE9FE',page:'my-consultations',sp:'0,1'},
 {name:'Prescriptions',icon:'upload_file',color:'#10B981',bg:'#D1FAE5',page:'upload-prescription',sp:'0,2'},
 {name:'Lab Tests',icon:'science',color:'#F97316',bg:'#FFEDD5',page:'lab-tests',sp:'1,0'},
-{name:'My Records',icon:'monitor_heart',color:'#F59E0B',bg:'#FEF3C7',page:'health-records',sp:'1,1'},
+{name:'My Records',icon:'monitor_heart',color:'#F59E0B',bg:'#FEF3C7',page:'my-records',sp:'1,1'},
 {name:'Memberships',icon:'card_membership',color:'#EC4899',bg:'#FCE7F3',page:'membership',sp:'1,2'},
 {name:'Insurance',icon:'shield',color:'#8B5CF6',bg:'#FCE7F3',page:'insurance',sp:'2,0'},
 {name:'Medical Tourism',icon:'flight',color:'#3B82F6',bg:'#DBEAFE',page:'medical-tourism',sp:'2,1'},
@@ -511,7 +511,7 @@ const BottomNav=({active,onNav})=>{
 const tabs=[
 {id:'home',ni:0,label:'Home'},
 {id:'medicines',ni:1,label:'Medicines'},
-{id:'lab-tests',ni:2,label:'Lab Tests'},
+{id:'health-records',ni:2,label:'My Health'},
 {id:'consult',ni:3,label:'Doctor'},
 {id:'profile',ni:4,label:'Settings'},
 ];
@@ -2490,7 +2490,7 @@ const cards=[
 ];
 return(
 <div className="fade-in" style={{background:'#FFFFFF'}}>
-<SubHeader title="Vitals" onBack={onBack}/>
+<SubHeader title="My Health" onBack={onBack}/>
 <div className="resp-grid-vitals px-4 mb-3">
 {cards.map(c=>(
 <button key={c.key} onClick={()=>c.key==='bmi'?setShowBmi(true):nav('vital-detail',c.key)} className="bg-white rounded-2xl border border-slate-100 shadow-sm py-4 px-2 flex flex-col items-center justify-center gap-0.5 active:scale-[0.97] transition">
@@ -4907,6 +4907,7 @@ case 'lab-detail':return detail?<LabTestDetailScreen item={detail} onBack={goBac
 case 'doc-detail':return detail?<DoctorDetailScreen item={detail} onBack={goBack} nav={nav}/>:null;
 case 'cart':return <CartScreen cart={cart} onBack={goBack} updateQty={updateQty} removeItem={removeItem} onCheckout={handleCheckout} points={points} usePoints={usePoints} setUsePoints={setUsePoints}/>;
 case 'health-records':return <HealthRecordsScreen onBack={goBack} nav={nav} vitals={vitals}/>;
+case 'my-records':return <UnderDevScreen title="My Records" icon="folder_open" onBack={goBack}/>;
 case 'vital-detail':return detail?<VitalDetailScreen vitalKey={detail} onBack={goBack} vitals={vitals} setVitals={setVitals} showToast={showToast}/>:null;
 case 'my-orders':return <MyOrdersScreen onBack={goBack} orders={orders} onRefresh={refreshData} onOrderDetail={(o)=>{setHistory(h=>[...h,screen]);setDetail(o);setScreen('order-detail');if(scrollRef.current)scrollRef.current.scrollTop=0}}/>;
 case 'order-detail':return detail?<OrderDetailScreen onBack={goBack} order={detail} showToast={showToast} onReorder={(items)=>{items.forEach(it=>{const med=MEDICINES.find(m=>m.name===it.name);if(med)addToCart(med)});nav('cart')}} onUpdateOrder={(id,updates)=>{setOrders(prev=>prev.map(o=>o.id===id?{...o,...updates}:o));setDetail(prev=>prev&&prev.id===id?{...prev,...updates}:prev)}}/>:null;
