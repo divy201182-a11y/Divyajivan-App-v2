@@ -559,121 +559,11 @@ const SectionHead=({title,action,onAction})=>(
 </div>
 );
 
-const MedSvg=({name,size=40})=>{const s={viewBox:'0 0 40 40',width:size,height:size,xmlns:'http://www.w3.org/2000/svg'};
-const icons={
-'medicines':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FCE4EC'}),
-React.createElement('rect',{x:12,y:8,width:14,height:20,rx:3,fill:'#43A047'}),
-React.createElement('rect',{x:14,y:6,width:10,height:4,rx:2,fill:'#66BB6A'}),
-React.createElement('path',{d:'M19 14h-3v2h3v3h2v-3h3v-2h-3v-3h-2z',fill:'#fff'}),
-React.createElement('rect',{x:26,y:16,width:8,height:4,rx:2,fill:'#1E88E5',transform:'rotate(-30 30 18)'}),
-React.createElement('circle',{cx:10,cy:28,r:2.5,fill:'#42A5F5'}),
-React.createElement('circle',{cx:15,cy:30,r:2,fill:'#E91E63'}),
-React.createElement('path',{d:'M6 10l2-2',stroke:'#43A047',strokeWidth:1.5,strokeLinecap:'round'}),
-React.createElement('path',{d:'M8 6l0 2',stroke:'#43A047',strokeWidth:1.5,strokeLinecap:'round'}),
-),
-'full-body-checkup':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#DBEAFE'}),
-React.createElement('rect',{x:10,y:7,width:20,height:26,rx:2,fill:'#fff',stroke:'#1E3A5F',strokeWidth:1.5}),
-React.createElement('path',{d:'M16 5h8v4a2 2 0 01-2 2h-4a2 2 0 01-2-2z',fill:'#1E3A5F'}),
-React.createElement('path',{d:'M20 16c1.5 0 2.5-1 2.5-2.5S21.5 11 20 11s-2.5 1-2.5 2.5S18.5 16 20 16z',fill:'#E53935'}),
-React.createElement('path',{d:'M15 21l2 2 4-4',stroke:'#4CAF50',strokeWidth:1.8,strokeLinecap:'round',strokeLinejoin:'round',fill:'none'}),
-React.createElement('line',{x1:15,y1:27,x2:25,y2:27,stroke:'#90CAF9',strokeWidth:1}),
-React.createElement('line',{x1:15,y1:29.5,x2:22,y2:29.5,stroke:'#90CAF9',strokeWidth:1}),
-),
-'diabetes-care':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FFF9C4'}),
-React.createElement('rect',{x:12,y:10,width:14,height:18,rx:3,fill:'#fff',stroke:'#1565C0',strokeWidth:1.5}),
-React.createElement('rect',{x:15,y:13,width:8,height:6,rx:1,fill:'#E3F2FD',stroke:'#1565C0',strokeWidth:0.8}),
-React.createElement('circle',{cx:19,cy:16,r:1.2,fill:'#1565C0'}),
-React.createElement('rect',{x:17,y:8,width:4,height:3,rx:1,fill:'#1565C0'}),
-React.createElement('circle',{cx:28,cy:12,r:3,fill:'#E53935'}),
-React.createElement('path',{d:'M28 9c0 0-2 2.5-2 3.5a2 2 0 004 0c0-1-2-3.5-2-3.5z',fill:'#E53935'}),
-React.createElement('line',{x1:16,y1:23,x2:22,y2:23,stroke:'#90A4AE',strokeWidth:0.8}),
-React.createElement('line',{x1:16,y1:25,x2:20,y2:25,stroke:'#90A4AE',strokeWidth:0.8}),
-),
-'heart-care':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FCE4EC'}),
-React.createElement('path',{d:'M20 30l-8-8c-2.5-2.5-2.5-6.5 0-9s6.5-2.5 9 0l-1 1 1-1c2.5-2.5 6.5-2.5 9 0s2.5 6.5 0 9z',fill:'#E91E63',transform:'translate(-2,-1) scale(0.85)'}),
-React.createElement('path',{d:'M12 20h3l2-4 3 8 2-6 2 2h4',stroke:'#fff',strokeWidth:1.5,strokeLinecap:'round',strokeLinejoin:'round',fill:'none'}),
-),
-'pain-relief':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#E8F5E9'}),
-React.createElement('rect',{x:7,y:14,width:26,height:12,rx:6,fill:'#FFCCBC',stroke:'#FF8A65',strokeWidth:1,transform:'rotate(-20 20 20)'}),
-React.createElement('rect',{x:16,y:12.5,width:8,height:15,rx:0,fill:'#FFA07A',transform:'rotate(-20 20 20)'}),
-React.createElement('line',{x1:18,y1:17,x2:18,y2:22,stroke:'#fff',strokeWidth:0.8,transform:'rotate(-20 20 20)'}),
-React.createElement('line',{x1:20,y1:16.5,x2:20,y2:22.5,stroke:'#fff',strokeWidth:0.8,transform:'rotate(-20 20 20)'}),
-React.createElement('line',{x1:22,y1:16,x2:22,y2:23,stroke:'#fff',strokeWidth:0.8,transform:'rotate(-20 20 20)'}),
-),
-'fever-cold':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FFF9C4'}),
-React.createElement('rect',{x:17,y:6,width:6,height:24,rx:3,fill:'#fff',stroke:'#263238',strokeWidth:1.2}),
-React.createElement('circle',{cx:20,cy:27,r:4,fill:'#E53935'}),
-React.createElement('rect',{x:18.5,y:14,width:3,height:13,rx:1.5,fill:'#E53935'}),
-React.createElement('line',{x1:23.5,y1:15,x2:26,y2:15,stroke:'#263238',strokeWidth:0.8}),
-React.createElement('line',{x1:23.5,y1:18,x2:26,y2:18,stroke:'#263238',strokeWidth:0.8}),
-React.createElement('line',{x1:23.5,y1:21,x2:26,y2:21,stroke:'#263238',strokeWidth:0.8}),
-React.createElement('line',{x1:23.5,y1:12,x2:25,y2:12,stroke:'#263238',strokeWidth:0.8}),
-),
-'skin-care':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FCE4EC'}),
-React.createElement('rect',{x:14,y:14,width:12,height:18,rx:3,fill:'#E3F2FD',stroke:'#1E88E5',strokeWidth:1.2}),
-React.createElement('rect',{x:16,y:10,width:8,height:5,rx:2,fill:'#90CAF9'}),
-React.createElement('rect',{x:18,y:7,width:4,height:4,rx:2,fill:'#64B5F6'}),
-React.createElement('circle',{cx:20,cy:24,r:2.5,fill:'#1E88E5'}),
-React.createElement('path',{d:'M27 25c0 0-1.5 2-1.5 3a1.5 1.5 0 003 0c0-1-1.5-3-1.5-3z',fill:'#42A5F5'}),
-),
-'personal-care':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#E3F2FD'}),
-React.createElement('rect',{x:14,y:14,width:12,height:18,rx:3,fill:'#E8F5E9',stroke:'#1E88E5',strokeWidth:1.2}),
-React.createElement('rect',{x:16,y:10,width:8,height:5,rx:2,fill:'#90CAF9'}),
-React.createElement('rect',{x:18,y:7,width:4,height:4,rx:2,fill:'#64B5F6'}),
-React.createElement('circle',{cx:20,cy:23,r:2.5,fill:'#1E88E5'}),
-React.createElement('path',{d:'M20 26v3',stroke:'#1E88E5',strokeWidth:1,strokeLinecap:'round'}),
-),
-'womens-health':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#FCE4EC'}),
-React.createElement('circle',{cx:20,cy:13,r:5,fill:'#FFCDD2'}),
-React.createElement('circle',{cx:20,cy:12,r:4,fill:'#F8BBD0'}),
-React.createElement('path',{d:'M20 8c-2 0-3.5 1-4 3 0 0 1 2 4 2s4-2 4-2c-.5-2-2-3-4-3z',fill:'#263238'}),
-React.createElement('circle',{cx:18.5,cy:12.5,r:0.5,fill:'#263238'}),
-React.createElement('circle',{cx:21.5,cy:12.5,r:0.5,fill:'#263238'}),
-React.createElement('path',{d:'M12 35v-5c0-4 3.5-7 8-7s8 3 8 7v5',fill:'#E91E63'}),
-),
-'senior-care':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#EDE7F6'}),
-React.createElement('circle',{cx:20,cy:11,r:4,fill:'none',stroke:'#5C6BC0',strokeWidth:2}),
-React.createElement('path',{d:'M20 15v8',stroke:'#5C6BC0',strokeWidth:2,strokeLinecap:'round'}),
-React.createElement('path',{d:'M12 20l8 3 8-3',stroke:'#5C6BC0',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',fill:'none'}),
-React.createElement('path',{d:'M15 23v9',stroke:'#5C6BC0',strokeWidth:2,strokeLinecap:'round'}),
-React.createElement('path',{d:'M25 23v9',stroke:'#5C6BC0',strokeWidth:2,strokeLinecap:'round'}),
-),
-'thyroid':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#E8F5E9'}),
-React.createElement('path',{d:'M6 22h6l3-8 4 16 3-10 3 4h9',stroke:'#2E7D32',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',fill:'none'}),
-React.createElement('circle',{cx:31,cy:24,r:2.5,fill:'#2E7D32'}),
-),
-'health-checkups':React.createElement('svg',s,
-React.createElement('rect',{width:40,height:40,rx:10,fill:'#E3F2FD'}),
-React.createElement('rect',{x:10,y:7,width:20,height:26,rx:2,fill:'#fff',stroke:'#1565C0',strokeWidth:1.5}),
-React.createElement('path',{d:'M16 5h8v4a2 2 0 01-2 2h-4a2 2 0 01-2-2z',fill:'#1565C0'}),
-React.createElement('circle',{cx:20,cy:17,r:3,fill:'none',stroke:'#1565C0',strokeWidth:1.2}),
-React.createElement('path',{d:'M20 20v4',stroke:'#1565C0',strokeWidth:1.2,strokeLinecap:'round'}),
-React.createElement('path',{d:'M16 28h8',stroke:'#1565C0',strokeWidth:1.2,strokeLinecap:'round'}),
-React.createElement('path',{d:'M17 24l6 0',stroke:'#1565C0',strokeWidth:1.2,strokeLinecap:'round'}),
-React.createElement('path',{d:'M24 15c0 0 1 1 1 2',stroke:'#E53935',strokeWidth:1,strokeLinecap:'round',fill:'none'}),
-React.createElement('path',{d:'M22.5 14l2-1.5 1 2',fill:'#E53935'}),
-),
-};
-return icons[name]||null;
-};
-
-const CatIcon=({icon,label,color,bg,svg,size=52,onClick})=>(
+const CatIcon=({icon,label,color,bg,size=52,onClick})=>(
 <button onClick={onClick} className="flex flex-col items-center gap-2 w-full">
-{svg?<div className="rounded-2xl flex items-center justify-center overflow-hidden" style={{width:size,height:size}}><MedSvg name={svg} size={size}/></div>
-:<div className="rounded-full flex items-center justify-center overflow-hidden" style={{width:size,height:size,backgroundColor:bg}}>
+<div className="rounded-full flex items-center justify-center overflow-hidden" style={{width:size,height:size,backgroundColor:bg}}>
 <I name={icon} size={size*0.44} className="" style={{color}}/>
-</div>}
+</div>
 <span className="text-[11px] text-slate-600 font-medium text-center leading-tight">{label}</span>
 </button>
 );
@@ -815,21 +705,21 @@ return(
 <h3 className="text-lg font-bold text-slate-800 mb-1">Lab tests near you</h3>
 <p className="text-sm text-slate-600 leading-relaxed mb-4 max-w-[65%]">Book a test and give your sample at the lab, or at home where it's offered.</p>
 <button onClick={()=>nav('lab-tests')} className="px-5 py-2.5 rounded-full text-white text-sm font-bold" style={{backgroundColor:'#1E293B'}}>Book a test</button>
-<div className="absolute right-3 bottom-3 opacity-90">
-<MedSvg name="medicines" size={64}/>
+<div className="absolute right-3 bottom-3 flex items-end gap-1 opacity-80">
+<div className="w-14 h-16 rounded-xl flex items-center justify-center" style={{backgroundColor:'#DBEAFE'}}><I name="science" size={24} style={{color:'#3B82F6'}}/></div>
+<div className="w-10 h-10 rounded-full flex items-center justify-center" style={{backgroundColor:'#FCE7F3'}}><I name="medication" size={16} style={{color:'#EC4899'}}/></div>
 </div>
 </div>
 </div>
 {/* Health checkups - CSS auto scroll loop */}
 {(()=>{
 const hcCards=[
-{name:'Full body checkup',desc:'Head-to-toe screening',svg:'full-body-checkup'},
-{name:'Diabetes care',desc:'Sugar and HbA1c tests',svg:'diabetes-care'},
-{name:'Heart health',desc:'Heart and cholesterol',svg:'heart-care'},
-{name:"Women's health",desc:'Tests made for women',svg:'womens-health'},
-{name:'Senior care',desc:'For 60 and above',svg:'senior-care'},
-{name:'Thyroid',desc:'Thyroid profile',svg:'thyroid'},
-{name:'Health checkups',desc:'Full health screening',svg:'health-checkups'},
+{name:'Full body checkup',desc:'Head-to-toe screening',icon:'monitor_heart',color:'#059669',bg:'#D1FAE5'},
+{name:'Diabetes care',desc:'Sugar and HbA1c tests',icon:'bloodtype',color:'#D97706',bg:'#FEF3C7'},
+{name:'Heart health',desc:'Heart and cholesterol',icon:'favorite',color:'#EF4444',bg:'#FCE7F3'},
+{name:"Women's health",desc:'Tests made for women',icon:'face_3',color:'#EC4899',bg:'#FCE7F3'},
+{name:'Senior care',desc:'For 60 and above',icon:'accessibility_new',color:'#7C3AED',bg:'#EDE9FE'},
+{name:'Thyroid',desc:'Thyroid profile',icon:'show_chart',color:'#059669',bg:'#D1FAE5'},
 ];
 return(
 <div className="mb-4">
@@ -838,7 +728,7 @@ return(
 <div className="loop-track" style={{gap:'12px',paddingLeft:'16px'}}>
 {[...hcCards,...hcCards].map((c,i)=>(
 <button key={c.name+'_'+i} onClick={()=>nav('lab-tests')} className="bg-white rounded-2xl p-4 text-left border border-slate-100 shadow-sm flex-shrink-0" style={{width:'160px'}}>
-<div className="mb-3"><MedSvg name={c.svg} size={44}/></div>
+<div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{backgroundColor:c.bg}}><I name={c.icon} size={20} style={{color:c.color}}/></div>
 <p className="text-sm font-bold text-slate-800 mb-1">{c.name}</p>
 <p className="text-xs text-slate-500 truncate">{c.desc}</p>
 <p className="text-xs font-medium mt-2" style={{color:'#059669'}}>Price not set yet</p>
@@ -856,16 +746,16 @@ return(
 </div>
 <div className="grid grid-cols-4 gap-3">
 {[
-{name:'Medicines',svg:'medicines'},
-{name:'Diabetes care',svg:'diabetes-care'},
-{name:'Heart care',svg:'heart-care'},
-{name:'Pain relief',svg:'pain-relief'},
-{name:'Fever & cold',svg:'fever-cold'},
-{name:'Skin care',svg:'skin-care'},
-{name:'Personal care',svg:'personal-care'},
-{name:"Women's health",svg:'womens-health'},
+{name:'Vitamins',icon:'medication_liquid',color:'#D97706',bg:'#FEF3C7'},
+{name:'Diabetes care',icon:'bloodtype',color:'#2563EB',bg:'#DBEAFE'},
+{name:'Heart care',icon:'favorite',color:'#EF4444',bg:'#FEE2E2'},
+{name:'Pain relief',icon:'healing',color:'#059669',bg:'#D1FAE5'},
+{name:'Fever & cold',icon:'thermostat',color:'#EF4444',bg:'#FEE2E2'},
+{name:'Skin care',icon:'spa',color:'#3B82F6',bg:'#DBEAFE'},
+{name:'Personal care',icon:'water_drop',color:'#0EA5E9',bg:'#E0F2FE'},
+{name:"Women's health",icon:'face',color:'#EC4899',bg:'#FCE7F3'},
 ].map(c=>(
-<CatIcon key={c.name} svg={c.svg} label={c.name} onClick={()=>nav('medicines')}/>
+<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>nav('medicines')}/>
 ))}
 </div>
 </div>
