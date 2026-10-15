@@ -998,7 +998,7 @@ return(
 {name:'Personal care',icon:'water_drop',color:'#0EA5E9',bg:'#E0F2FE'},
 {name:"Women's health",icon:'face',color:'#EC4899',bg:'#FCE7F3'},
 ].map(c=>(
-<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>nav('med-cat-detail',{name:c.name,icon:c.icon,color:c.color,bg:c.bg})}/>
+<CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>onCatMeds(c.name)}/>
 ))}
 </div>
 </div>
