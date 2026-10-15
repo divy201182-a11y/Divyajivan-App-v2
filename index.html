@@ -993,14 +993,14 @@ return(
 </div>
 <div className="grid grid-cols-4 gap-3">
 {[
-{name:'Vitamins',icon:'medication_liquid',color:'#D97706',bg:'#FEF3C7'},
-{name:'Diabetes care',icon:'bloodtype',color:'#2563EB',bg:'#DBEAFE'},
-{name:'Heart care',icon:'favorite',color:'#EF4444',bg:'#FEE2E2'},
-{name:'Pain relief',icon:'healing',color:'#059669',bg:'#D1FAE5'},
-{name:'Fever & cold',icon:'thermostat',color:'#EF4444',bg:'#FEE2E2'},
-{name:'Skin care',icon:'spa',color:'#3B82F6',bg:'#DBEAFE'},
-{name:'Personal care',icon:'water_drop',color:'#0EA5E9',bg:'#E0F2FE'},
-{name:"Women's health",icon:'face',color:'#EC4899',bg:'#FCE7F3'},
+{name:'Vitamins & Supplements',icon:'spa',color:'#D97706',bg:'#FEF3C7'},
+{name:'Diabetes Care',icon:'bloodtype',color:'#2563EB',bg:'#DBEAFE'},
+{name:'Heart & BP',icon:'favorite',color:'#EF4444',bg:'#FEE2E2'},
+{name:'Iron & Blood',icon:'water_drop',color:'#EC4899',bg:'#FDF2F8'},
+{name:'Gastric Care',icon:'medication',color:'#059669',bg:'#D1FAE5'},
+{name:'Cholesterol',icon:'monitor_heart',color:'#059669',bg:'#ECFDF5'},
+{name:'Anti-Infectives',icon:'vaccines',color:'#0EA5E9',bg:'#E0F2FE'},
+{name:'Allergy & Respiratory',icon:'pulmonology',color:'#8B5CF6',bg:'#F5F3FF'},
 ].map(c=>(
 <CatIcon key={c.name} icon={c.icon} label={c.name} color={c.color} bg={c.bg} onClick={()=>onCatMeds(c.name)}/>
 ))}
