@@ -3037,15 +3037,8 @@ const MembershipScreen=({onBack})=>(
 /* ── SCREEN: MY ORDERS ── */
 const ORDER_STEPS=['Order Placed','Confirmed','Processing','Shipped','Delivered'];
 const STEP_ICONS=['receipt_long','check_circle','inventory_2','local_shipping','done_all'];
-const statusToStep={placed:0,confirmed:1,processing:2,shipped:3,delivered:4,cancelled:-1};
-const enrichOrder=(o)=>{
-const now=Date.now();const DAY=86400000;const age=now-o.date;
-if(o.status==='cancelled')return o;
-if(age>3*DAY)return{...o,status:'delivered'};
-if(age>1.5*DAY)return{...o,status:'shipped'};
-if(age>0.5*DAY)return{...o,status:'processing'};
-return{...o,status:'confirmed'};
-};
+const statusToStep={placed:0,pending:0,confirmed:1,processing:2,shipped:3,delivered:4,cancelled:-1};
+const enrichOrder=(o)=>o;
 const fmtDate=(ts)=>new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
 const fmtTime=(ts)=>new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 
@@ -3296,7 +3289,7 @@ return(
 const MyOrdersScreen=({onBack,orders,onOrderDetail,onRefresh})=>{
 const[tab,setTab]=useState('active');
 const enriched=orders.map(enrichOrder);
-const active=enriched.filter(o=>o.status==='placed'||o.status==='confirmed'||o.status==='processing'||o.status==='shipped');
+const active=enriched.filter(o=>o.status==='placed'||o.status==='pending'||o.status==='confirmed'||o.status==='processing'||o.status==='shipped');
 const past=enriched.filter(o=>o.status==='delivered'||o.status==='cancelled');
 const list=tab==='active'?active:past;
 return(
@@ -4153,6 +4146,7 @@ onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()
 const syncUserToBackend=async(user)=>{try{const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';const email=user.email||'';const{data:existing}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(existing){await _supa.from('app_users').update({last_login:new Date().toISOString(),name,avatar_url:user.user_metadata?.avatar_url||''}).eq('id',existing.id);await _supa.from('app_activity_log').insert({user_id:existing.id,user_name:name,action:'login'});return existing}const{data:nu}=await _supa.from('app_users').insert({firebase_uid:user.id||'',name,email,phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''}).select('id').single();if(nu)await _supa.from('app_activity_log').insert({user_id:nu.id,user_name:name,action:'register',details:'Synced from app'});return nu}catch(e){return null}};
 const syncOrderToBackend=async(order)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('email',order.user_email||'').maybeSingle();const{data:o}=await _supa.from('app_orders').insert({user_id:u?.id||null,order_number:order.order_id,total_amount:order.total_amount||0}).select('id').single();if(o&&order.items)for(const i of order.items)await _supa.from('app_order_items').insert({order_id:o.id,medicine_name:i.medicine_name,quantity:i.quantity||1,price:i.price||0});if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'place_order',details:'Order '+order.order_id+', ₹'+(order.total_amount||0)})}catch(e){}};
 const syncAppointmentToBackend=async(appt)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('name',appt.patient_name||'').maybeSingle();const{data:a}=await _supa.from('app_appointments').insert({user_id:u?.id||null,doctor_name:appt.doctor_name,specialty:appt.specialty||'',date:appt.date,time:appt.time,type:appt.type||'in-person',patient_name:appt.patient_name||''}).select('id').single();if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'book_appointment',details:'With '+appt.doctor_name+' on '+appt.date})}catch(e){}};
+const syncStatusesFromSupabase=async(currentOrders,setOrders,currentApts,setAppointments)=>{try{const email=window._djAuthEmail||'';if(!email)return;const{data:u}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(!u)return;const{data:sOrders}=await _supa.from('app_orders').select('order_number,status').eq('user_id',u.id);if(sOrders&&sOrders.length&&currentOrders.length){let changed=false;const updated=currentOrders.map(o=>{const match=sOrders.find(s=>s.order_number===o.id);if(match&&match.status!==o.status){changed=true;return{...o,status:match.status}}return o});if(changed)setOrders(updated)}const{data:sApts}=await _supa.from('app_appointments').select('doctor_name,date,time,status').eq('user_id',u.id);if(sApts&&sApts.length&&currentApts.length){let changed=false;const updated=currentApts.map(a=>{const match=sApts.find(s=>s.doctor_name===a.doctor&&s.time===a.time);if(match&&match.status!==a.status){changed=true;return{...a,status:match.status}}return a});if(changed)setAppointments(updated)}}catch(e){}};
 
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
@@ -5043,6 +5037,7 @@ const[vitals,setVitals]=useState(INITIAL_VITALS);
 useEffect(()=>{
 if(!authUser)return;
 syncUserToBackend(authUser);
+window._djAuthEmail=authUser.email||'';
 store.setUser(authUser.id);
 const savedProfile=store.get('profile',null);
 if(savedProfile){setUserProfile({...USER_INIT,...savedProfile})}
@@ -5061,6 +5056,7 @@ setChatHistory(store.get('chat_history',[]));
 setCart([]);
 setScreen('home');
 },[authUser]);
+useEffect(()=>{if(!authUser)return;const iv=setInterval(()=>{syncStatusesFromSupabase(orders,setOrders,appointments,setAppointments)},20000);syncStatusesFromSupabase(orders,setOrders,appointments,setAppointments);return()=>clearInterval(iv)},[authUser,orders.length,appointments.length]);
 useEffect(()=>{if(authUser){store.set('orders',orders)}},[orders]);
 useEffect(()=>{if(authUser){store.set('family',family)}},[family]);
 useEffect(()=>{if(authUser){store.set('profile',userProfile)}},[userProfile]);
@@ -5651,13 +5647,13 @@ return(
 {tab==='appointments'&&<div className="px-4 py-4">
 <button onClick={()=>nav('consult')} className="w-full py-3.5 bg-pri-600 text-white rounded-2xl text-sm font-bold mb-4 hover:bg-pri-700 transition">Book an appointment</button>
 {appts.length===0?<p className="text-center text-slate-400 py-8 text-sm">No appointments yet</p>:<div>
-{appts.filter(a=>a.status==='confirmed').length>0&&<div className="mb-4">
+{appts.filter(a=>a.status==='confirmed'||a.status==='booked').length>0&&<div className="mb-4">
 <p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">UPCOMING</p>
-{appts.filter(a=>a.status==='confirmed').map(a=>(
+{appts.filter(a=>a.status==='confirmed'||a.status==='booked').map(a=>(
 <div key={a.id} className="bg-slate-50 rounded-2xl p-4 mb-2">
 <div className="flex items-center justify-between mb-1">
 <p className="text-base font-bold text-slate-800">{a.doctor}</p>
-<span className="text-xs font-semibold text-pri-600 bg-pri-50 px-2 py-0.5 rounded-full">Confirmed</span>
+<span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${a.status==='confirmed'?'text-pri-600 bg-pri-50':'text-amber-600 bg-amber-50'}`}>{a.status==='confirmed'?'Confirmed':'Booked'}</span>
 </div>
 <div className="flex items-center gap-1 text-xs text-slate-500 mb-1"><I name="person" size={14}/><span>{a.type} · for {a.patient}</span></div>
 <div className="flex items-center gap-1 text-xs text-slate-500"><I name="schedule" size={14}/><span>{fmtDate(a.date)} at {a.time}</span></div>
@@ -5665,13 +5661,13 @@ return(
 </div>
 ))}
 </div>}
-{appts.filter(a=>a.status!=='confirmed').length>0&&<div>
+{appts.filter(a=>a.status!=='confirmed'&&a.status!=='booked').length>0&&<div>
 <p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">PAST</p>
-{appts.filter(a=>a.status!=='confirmed').map(a=>(
+{appts.filter(a=>a.status!=='confirmed'&&a.status!=='booked').map(a=>(
 <div key={a.id} className="bg-slate-50 rounded-2xl p-4 mb-2">
 <div className="flex items-center justify-between mb-1">
 <p className="text-base font-bold text-slate-800">{a.doctor}</p>
-<span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${a.status==='cancelled'?'text-slate-500 bg-slate-200':a.status==='declined'?'text-red-600 bg-red-50':'text-slate-500 bg-slate-200'}`}>{a.status==='cancelled'?'Cancelled':a.status==='declined'?'Declined':a.status}</span>
+<span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${a.status==='cancelled'?'text-red-500 bg-red-50':a.status==='completed'?'text-purple-600 bg-purple-50':'text-slate-500 bg-slate-200'}`}>{a.status==='cancelled'?'Cancelled':a.status==='completed'?'Completed':a.status}</span>
 </div>
 <div className="flex items-center gap-1 text-xs text-slate-500 mb-1"><I name="person" size={14}/><span>{a.type} · for {a.patient}</span></div>
 <div className="flex items-center gap-1 text-xs text-slate-500"><I name="schedule" size={14}/><span>Booked {new Date(a.bookedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span></div>
