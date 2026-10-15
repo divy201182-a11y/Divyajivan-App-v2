@@ -4147,7 +4147,10 @@ onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()
 }};
 
 const BACKEND_URL='http://localhost:3001';
-const syncUserToBackend=async(user)=>{try{await fetch(BACKEND_URL+'/api/auth/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firebase_uid:user.id||'',name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',email:user.email||'',phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''})})}catch(e){}};
+let _backendToken=null;
+const syncUserToBackend=async(user)=>{try{const r=await fetch(BACKEND_URL+'/api/auth/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firebase_uid:user.id||'',name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',email:user.email||'',phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''})});const d=await r.json();if(d.token)_backendToken=d.token;return d}catch(e){return null}};
+const syncOrderToBackend=async(order)=>{try{await fetch(BACKEND_URL+'/api/orders/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)})}catch(e){}};
+const syncAppointmentToBackend=async(appt)=>{try{await fetch(BACKEND_URL+'/api/appointments/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appt)})}catch(e){}};
 
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
@@ -5133,6 +5136,7 @@ if(usablePts>0)points.redeemPoints(usablePts,'DJ'+Date.now(),'Used on Medicine O
 }
 const order={id:'ORD'+Date.now(),items:cart.map(c=>({name:c.name,brand:c.brand,pack:c.pack,price:c.price,qty:c.qty,icon:c.img||'medication',imgUrl:c.imgUrl||null,color:c.color||null})),total:subtotal-pointsDiscount,pointsSaved:pointsDiscount,status:'placed',date:Date.now()};
 setOrders(prev=>[order,...prev]);
+syncOrderToBackend({order_id:order.id,items:order.items.map(i=>({medicine_name:i.name,quantity:i.qty,price:i.price})),total_amount:order.total,user_email:authUser?.email||''});
 setCart([]);setUsePoints(false);
 showToast('Order placed successfully!'+(pointsDiscount>0?' Saved ₹'+pointsDiscount+' with Jivan Points':''));
 setScreen('my-orders');
@@ -5578,7 +5582,7 @@ const dates=[];
 for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);dates.push(d)}
 const fmtD=(d)=>d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
 const times=['10:00 AM','10:15 AM','10:30 AM','10:45 AM','11:00 AM','11:15 AM','11:30 AM','11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM'];
-const confirm=()=>{if(selTime===null)return;const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:dates[selDate].toISOString(),time:times[selTime],status:'confirmed',type:'In-person',bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);showToast('Appointment booked!');onBack()};
+const confirm=()=>{if(selTime===null)return;const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:dates[selDate].toISOString(),time:times[selTime],status:'confirmed',type:'In-person',bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);syncAppointmentToBackend({doctor_name:doctor.name,specialty:doctor.specialty||'',date:dates[selDate].toISOString().split('T')[0],time:times[selTime],type:'in-person',patient_name:patient});showToast('Appointment booked!');onBack()};
 return(
 <div className="fade-in" style={{background:'#FFFFFF'}}>
 <div className="flex items-center justify-between px-4 py-3 bg-white">
