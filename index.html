@@ -4146,6 +4146,9 @@ resetPasswordForEmail(email){const all=this._users();if(!all[email.toLowerCase()
 onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()=>{this._oauthCb=null}}}}}
 }};
 
+const BACKEND_URL='http://localhost:3001';
+const syncUserToBackend=async(user)=>{try{await fetch(BACKEND_URL+'/api/auth/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firebase_uid:user.id||'',name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',email:user.email||'',phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''})})}catch(e){}};
+
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
 <path d="M60 10C30 40 10 80 20 120C30 100 50 85 60 60C70 85 90 100 100 120C110 80 90 40 60 10Z" fill="#059669"/>
@@ -5034,6 +5037,7 @@ const[appointments,setAppointments]=useState([]);
 const[vitals,setVitals]=useState(INITIAL_VITALS);
 useEffect(()=>{
 if(!authUser)return;
+syncUserToBackend(authUser);
 store.setUser(authUser.id);
 const savedProfile=store.get('profile',null);
 if(savedProfile){setUserProfile({...USER_INIT,...savedProfile})}
