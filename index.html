@@ -759,7 +759,7 @@ const BottomNav=({active,onNav})=>{
 const tabs=[
 {id:'home',ni:0,label:'Home'},
 {id:'medicines',ni:1,label:'Medicines'},
-{id:'health-records',ni:2,label:'My Health'},
+{id:'health-records',ni:2,label:'My Health',customIcon:'my-health-icon.png'},
 {id:'consult',ni:3,label:'Doctor'},
 {id:'profile',ni:4,label:'Settings'},
 ];
@@ -771,7 +771,7 @@ const isActive=active===t.id;
 return(
 <button key={t.id} onClick={()=>onNav(t.id)} className="nav-tab relative flex flex-col items-center py-1.5 px-3 rounded-xl transition-all" style={{background:isActive?'#EFF6FF':'transparent'}}>
 <div className="nav-icon-wrap" style={{width:36,height:36,display:'flex',alignItems:'center',justifyContent:'center',opacity:isActive?1:0.4,filter:isActive?'none':'grayscale(0.4)',transition:'all 0.2s ease'}}>
-{window.NAV_ICONS[t.ni]?<img src={window.NAV_ICONS[t.ni]} alt="" style={{width:'100%',height:'100%',objectFit:'contain',transition:'transform 0.2s ease'}}/>:<div style={{width:28,height:28,borderRadius:6,backgroundColor:'#E2E8F0'}}/>}
+{t.customIcon?<img src={t.customIcon} alt="" style={{width:26,height:26,objectFit:'contain',transition:'transform 0.2s ease'}}/>:window.NAV_ICONS[t.ni]?<img src={window.NAV_ICONS[t.ni]} alt="" style={{width:'100%',height:'100%',objectFit:'contain',transition:'transform 0.2s ease'}}/>:<div style={{width:28,height:28,borderRadius:6,backgroundColor:'#E2E8F0'}}/>}
 </div>
 <span className={`text-[10px] mt-0.5 transition-all ${isActive?'font-semibold text-blue-600':'font-medium text-slate-400'}`}>{t.label}</span>
 </button>
