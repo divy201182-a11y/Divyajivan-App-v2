@@ -76,6 +76,19 @@ tr:hover td{background:rgba(21,154,114,.02)}
 .status.delivered,.status.completed{background:#EAF7F1;color:#159A72}
 .status.pending,.status.upcoming{background:#FFF8E7;color:#D99A24}
 .status.cancelled{background:#FDE8E8;color:#D95C5C}
+.status.active,.status.shipped,.status.confirmed,.status.processing{background:#E0F2FE;color:#3B82B6}
+.pipe{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.pipe-step{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--txt3);transition:all .15s}
+.pipe-step:hover{border-color:var(--pri);color:var(--pri)}
+.pipe-step.done{background:var(--pri-light);color:var(--pri);border-color:var(--pri)}
+.pipe-step.current{background:var(--pri);color:#fff;border-color:var(--pri)}
+.pipe-arrow{color:var(--txt3);font-size:12px}
+.act-btns{display:flex;gap:4px;flex-wrap:wrap}
+.act-btn{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;transition:all .15s}
+.act-btn:hover{opacity:.85}
+.act-btn.confirm{border-color:#159A72;color:#159A72}.act-btn.confirm:hover{background:#EAF7F1}
+.act-btn.complete{border-color:#3B82B6;color:#3B82B6}.act-btn.complete:hover{background:#E0F2FE}
+.act-btn.cancel{border-color:#D95C5C;color:#D95C5C}.act-btn.cancel:hover{background:#FDE8E8}
 
 .activity-list{max-height:420px;overflow-y:auto}
 .activity-item{display:flex;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);align-items:flex-start}
@@ -296,23 +309,57 @@ function renderActivityItem(evt){
   return '<div class="activity-item"><div class="a-icon '+cfg.color+'"><span class="material-icons-outlined">'+cfg.icon+'</span></div><div class="a-body"><h4>'+cfg.label+'</h4><p>'+(evt.user_name||'')+(detail&&detail!==evt.user_name?' — '+detail:'')+'</p></div><span class="a-time">'+timeAgo(evt.created_at)+'</span></div>';
 }
 
+const orderSteps=['pending','processing','shipped','delivered'];
+async function updateOrderStatus(id,status){
+  await _supa.from('app_orders').update({status}).eq('id',id);
+  loadData();
+}
+
+function renderOrderPipeline(order){
+  const cur=orderSteps.indexOf(order.status);
+  if(order.status==='cancelled')return '<span class="status cancelled">cancelled</span>';
+  return '<div class="pipe">'+orderSteps.map((s,i)=>{
+    let cls='pipe-step';
+    if(i<cur)cls+=' done';
+    if(i===cur)cls+=' current';
+    return (i>0?'<span class="pipe-arrow">›</span>':'')+
+      '<span class="'+cls+'" onclick="updateOrderStatus('+order.id+',\''+s+'\')" title="Set to '+s+'">'+s+'</span>';
+  }).join('')+'</div>';
+}
+
 function renderOrdersTable(orders,limit){
   const show=limit?orders.slice(0,limit):orders;
   if(!show.length)return '<div class="empty-state"><span class="material-icons-outlined">inbox</span><p>No orders yet</p></div>';
-  const statusColors={pending:'upcoming',processing:'upcoming',shipped:'active',delivered:'completed',cancelled:'cancelled'};
   return '<table><thead><tr><th>Time</th><th>Order #</th><th>User</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody>'+show.map(o=>{
     const items=(o.app_order_items||[]).map(i=>i.medicine_name).join(', ')||'-';
     const user=o.app_users?o.app_users.name:'—';
-    return '<tr><td>'+formatTime(o.created_at)+'</td><td style="font-family:monospace;font-size:11px">'+o.order_number+'</td><td>'+user+'</td><td>'+items+'</td><td style="font-weight:600">₹'+o.total_amount+'</td><td><span class="status '+(statusColors[o.status]||'')+'">'+o.status+'</span></td></tr>';
+    return '<tr><td>'+formatTime(o.created_at)+'</td><td style="font-family:monospace;font-size:11px">'+o.order_number+'</td><td>'+user+'</td><td>'+items+'</td><td style="font-weight:600">₹'+o.total_amount+'</td><td>'+renderOrderPipeline(o)+'</td></tr>';
   }).join('')+'</tbody></table>';
+}
+
+async function updateApptStatus(id,status){
+  await _supa.from('app_appointments').update({status}).eq('id',id);
+  loadData();
+}
+
+function renderApptActions(a){
+  const s=a.status;
+  if(s==='completed')return '<span class="status completed">completed</span>';
+  if(s==='cancelled')return '<span class="status cancelled">cancelled</span>';
+  const statusColors={booked:'upcoming',confirmed:'active'};
+  let html='<div style="display:flex;flex-direction:column;gap:4px"><span class="status '+(statusColors[s]||'')+'">'+s+'</span><div class="act-btns">';
+  if(s==='booked')html+='<span class="act-btn confirm" onclick="updateApptStatus('+a.id+',\'confirmed\')">Confirm</span>';
+  if(s==='booked'||s==='confirmed')html+='<span class="act-btn complete" onclick="updateApptStatus('+a.id+',\'completed\')">Complete</span>';
+  if(s!=='cancelled'&&s!=='completed')html+='<span class="act-btn cancel" onclick="updateApptStatus('+a.id+',\'cancelled\')">Cancel</span>';
+  html+='</div></div>';
+  return html;
 }
 
 function renderConsultationsTable(appointments,limit){
   const show=limit?appointments.slice(0,limit):appointments;
   if(!show.length)return '<div class="empty-state"><span class="material-icons-outlined">inbox</span><p>No consultations yet</p></div>';
-  const statusColors={booked:'upcoming',confirmed:'active',completed:'completed',cancelled:'cancelled'};
-  return '<table><thead><tr><th>Time</th><th>Doctor</th><th>Patient</th><th>Type</th><th>Date/Slot</th><th>Status</th></tr></thead><tbody>'+show.map(a=>{
-    return '<tr><td>'+formatTime(a.created_at)+'</td><td>'+a.doctor_name+'</td><td>'+(a.patient_name||'—')+'</td><td><span class="status upcoming">'+a.type+'</span></td><td>'+a.date+' '+a.time+'</td><td><span class="status '+(statusColors[a.status]||'')+'">'+a.status+'</span></td></tr>';
+  return '<table><thead><tr><th>Time</th><th>Doctor</th><th>Patient</th><th>Type</th><th>Date/Slot</th><th>Status / Actions</th></tr></thead><tbody>'+show.map(a=>{
+    return '<tr><td>'+formatTime(a.created_at)+'</td><td>'+a.doctor_name+'</td><td>'+(a.patient_name||'—')+'</td><td><span class="status upcoming">'+a.type+'</span></td><td>'+a.date+' '+a.time+'</td><td>'+renderApptActions(a)+'</td></tr>';
   }).join('')+'</tbody></table>';
 }
 

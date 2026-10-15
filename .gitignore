@@ -2,3 +2,20 @@
 .netlify
 .claude
 backend/
+node_modules/
+package.json
+package-lock.json
+
+# Database/SQL files
+*.sql
+
+# Dev server scripts
+server.ps1
+
+# Temp/dev files
+fix-icon.js
+logo_data.txt
+app.html
+app.js
+divyajivan.html
+styles.css
