@@ -24,6 +24,10 @@ const firebaseAuth=firebase.auth();
 const googleProvider=new firebase.auth.GoogleAuthProvider();
 googleProvider.setCustomParameters({prompt:'select_account'});
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+<script>
+const _supa=window.supabase.createClient('https://qkdrrqgsajqkibxqbtkw.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrZHJycWdzYWpxa2lieHFidGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNTMxNTcsImV4cCI6MjEwNzYyOTE1N30.0kZ-3b_oZU1Fw_dpX6pj2LpUxlwgett2Xp64v8NVEVs');
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap" rel="stylesheet">
@@ -4146,11 +4150,9 @@ resetPasswordForEmail(email){const all=this._users();if(!all[email.toLowerCase()
 onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()=>{this._oauthCb=null}}}}}
 }};
 
-const BACKEND_URL='http://localhost:3001';
-let _backendToken=null;
-const syncUserToBackend=async(user)=>{try{const r=await fetch(BACKEND_URL+'/api/auth/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firebase_uid:user.id||'',name:user.user_metadata?.full_name||user.email?.split('@')[0]||'User',email:user.email||'',phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''})});const d=await r.json();if(d.token)_backendToken=d.token;return d}catch(e){return null}};
-const syncOrderToBackend=async(order)=>{try{await fetch(BACKEND_URL+'/api/orders/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(order)})}catch(e){}};
-const syncAppointmentToBackend=async(appt)=>{try{await fetch(BACKEND_URL+'/api/appointments/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(appt)})}catch(e){}};
+const syncUserToBackend=async(user)=>{try{const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';const email=user.email||'';const{data:existing}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(existing){await _supa.from('app_users').update({last_login:new Date().toISOString(),name,avatar_url:user.user_metadata?.avatar_url||''}).eq('id',existing.id);await _supa.from('app_activity_log').insert({user_id:existing.id,user_name:name,action:'login'});return existing}const{data:nu}=await _supa.from('app_users').insert({firebase_uid:user.id||'',name,email,phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''}).select('id').single();if(nu)await _supa.from('app_activity_log').insert({user_id:nu.id,user_name:name,action:'register',details:'Synced from app'});return nu}catch(e){return null}};
+const syncOrderToBackend=async(order)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('email',order.user_email||'').maybeSingle();const{data:o}=await _supa.from('app_orders').insert({user_id:u?.id||null,order_number:order.order_id,total_amount:order.total_amount||0}).select('id').single();if(o&&order.items)for(const i of order.items)await _supa.from('app_order_items').insert({order_id:o.id,medicine_name:i.medicine_name,quantity:i.quantity||1,price:i.price||0});if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'place_order',details:'Order '+order.order_id+', ₹'+(order.total_amount||0)})}catch(e){}};
+const syncAppointmentToBackend=async(appt)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('name',appt.patient_name||'').maybeSingle();const{data:a}=await _supa.from('app_appointments').insert({user_id:u?.id||null,doctor_name:appt.doctor_name,specialty:appt.specialty||'',date:appt.date,time:appt.time,type:appt.type||'in-person',patient_name:appt.patient_name||''}).select('id').single();if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'book_appointment',details:'With '+appt.doctor_name+' on '+appt.date})}catch(e){}};
 
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
