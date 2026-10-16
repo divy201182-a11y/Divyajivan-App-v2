@@ -1371,7 +1371,7 @@ return(
 <p className="text-sm font-semibold truncate" style={{color:d.color||'#059669'}}>{d.spec}</p>
 <p className="text-xs text-slate-400 truncate">{hospFilter}</p>
 </button>
-<button onClick={()=>nav('book-appt',d)} className="book-btn px-4 py-2 rounded-xl text-sm font-bold flex-shrink-0 transition-colors">Book</button>
+<button onClick={()=>nav('book-appt',{...d,bookHospital:hospFilter})} className="book-btn px-4 py-2 rounded-xl text-sm font-bold flex-shrink-0 transition-colors">Book</button>
 </div>
 ))}
 </div>
@@ -5954,7 +5954,7 @@ return(
 <p className="text-[13px] text-slate-500 flex items-center gap-1.5 mt-0.5"><I name="account_balance_wallet" size={14} className="flex-shrink-0"/>Consultation ₹{doctor.fee}</p>
 </div>
 </div>
-<div className="flex items-center gap-1.5 mt-3 pt-3 text-[13px] text-slate-400" style={{borderTop:'1px solid #F1F5F9'}}><I name="apartment" size={14} className="flex-shrink-0"/>{(doctor.hospital||'').replace(' · ',', ')}</div>
+<div className="flex items-center gap-2 mt-3 pt-3 text-[13px] text-slate-500" style={{borderTop:'1px solid #F1F5F9'}}><img src="hospital-icon.png" alt="" className="w-6 h-6 rounded-lg flex-shrink-0"/>{((doctor.bookHospital||doctor.hospital)||'').replace(' · ',', ')}</div>
 </div>
 {/* Who is it for */}
 <h3 className="text-lg font-bold text-slate-800 mb-2">Who is it for?</h3>
