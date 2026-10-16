@@ -211,6 +211,7 @@ tr:hover td{background:rgba(232,229,223,.35)}
 <div class="nav-link active" onclick="showSection('dashboard')"><span class="material-icons-outlined">dashboard</span>Dashboard</div>
 <div class="nav-link" onclick="showSection('orders')"><span class="material-icons-outlined">shopping_bag</span>Orders<span class="badge" id="ord-badge">0</span></div>
 <div class="nav-link" onclick="showSection('consultations')"><span class="material-icons-outlined">video_call</span>Consultations<span class="badge" id="con-badge" style="background:var(--purple)">0</span></div>
+<div class="nav-link" onclick="showSection('hospitals')"><span class="material-icons-outlined">apartment</span>Hospitals</div>
 <div class="nav-link" onclick="showSection('lab')"><span class="material-icons-outlined">biotech</span>Lab Tests</div>
 <div class="nav-link" onclick="showSection('insurance')"><span class="material-icons-outlined">verified_user</span>Insurance</div>
 <div class="nav-link" onclick="showSection('users')"><span class="material-icons-outlined">people</span>Users</div>
@@ -273,6 +274,12 @@ tr:hover td{background:rgba(232,229,223,.35)}
 <div class="section-page" id="sec-consultations">
 <div class="top-bar"><h2>Doctor Consultations</h2><button class="refresh" onclick="loadData()"><span class="material-icons-outlined">refresh</span>Refresh</button></div>
 <div class="panel"><div class="panel-header"><h3><span class="material-icons-outlined">video_call</span>All Consultations</h3><span class="count" id="all-con-count">0</span></div><div id="all-con-table"></div></div>
+</div>
+
+<!-- Hospitals Section -->
+<div class="section-page" id="sec-hospitals">
+<div class="top-bar"><h2>Hospitals</h2><button class="refresh" onclick="loadData()"><span class="material-icons-outlined">refresh</span>Refresh</button></div>
+<div class="panel"><div class="panel-header"><h3><span class="material-icons-outlined">apartment</span>All Hospitals</h3><span class="count" id="hosp-count">0</span></div><div id="hospitals-list"></div></div>
 </div>
 
 <!-- Lab Section -->
@@ -444,6 +451,18 @@ function renderInsurance(rows,usersById){
     return '<tr><td>'+formatTime(r.created_at)+'</td><td>'+user+'</td><td><span class="status upcoming">'+(insKindLabels[r.kind]||r.kind)+'</span></td><td>'+cp+'</td><td style="font-family:monospace;font-size:11px">'+(r.policy_number||'—')+'</td><td>'+(r.cover_amount?'₹'+r.cover_amount:'—')+'</td></tr>';
   }).join('')+'</tbody></table>';
 }
+function renderHospitals(hospitals,appointments,orders){
+  if(!hospitals||!hospitals.length)return '<div class="empty-state"><span class="material-icons-outlined">apartment</span><p>No hospitals yet. Run supabase-hospitals.sql in Supabase.</p></div>';
+  return hospitals.map(h=>{
+    const appts=(appointments||[]).filter(a=>(a.hospital||'').split(' · ')[0].trim()===h.name).length;
+    return '<div class="user-card">'+
+      '<img src="hospital-icon.png" alt="" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"/>'+
+      '<div class="user-info" style="flex:1"><h4>'+h.name+'</h4><p>'+(h.city||'')+(h.address?' · '+h.address:'')+'</p>'+
+      '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">'+
+      '<span style="display:inline-block;background:#F0ECF7;color:var(--purple);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:7px"><span style="opacity:.7">Appointments</span> '+appts+'</span>'+
+      '</div></div></div>';
+  }).join('');
+}
 
 async function clearActivityLog(){
   await _supa.from('app_activity_log').delete().neq('id',0);
@@ -451,17 +470,18 @@ async function clearActivityLog(){
 }
 
 async function loadData(){
-  const [{data:users},{data:orders},{data:appointments},{data:activity},{data:insurance},{data:family},{data:vitals}]=await Promise.all([
+  const [{data:users},{data:orders},{data:appointments},{data:activity},{data:insurance},{data:family},{data:vitals},{data:hospitals}]=await Promise.all([
     _supa.from('app_users').select('*').order('created_at',{ascending:false}),
     _supa.from('app_orders').select('*,app_order_items(*),app_users(name,email)').order('created_at',{ascending:false}),
     _supa.from('app_appointments').select('*').order('created_at',{ascending:false}),
     _supa.from('app_activity_log').select('*').order('created_at',{ascending:false}),
     _supa.from('app_insurance').select('*').order('created_at',{ascending:false}),
     _supa.from('app_family_members').select('*'),
-    _supa.from('app_vitals').select('*')
+    _supa.from('app_vitals').select('*'),
+    _supa.from('app_hospitals').select('*').order('id')
   ]);
 
-  const u=users||[], o=orders||[], a=appointments||[], act=activity||[], ins=insurance||[], famRows=family||[], vitRows=vitals||[];
+  const u=users||[], o=orders||[], a=appointments||[], act=activity||[], ins=insurance||[], famRows=family||[], vitRows=vitals||[], hosps=hospitals||[];
   const usersById={}; u.forEach(x=>{usersById[x.id]=x.name});
   const famBy={}; famRows.forEach(f=>{(famBy[f.user_id]=famBy[f.user_id]||[]).push(f)});
   const vitBy={}; vitRows.forEach(v=>{(vitBy[v.user_id]=vitBy[v.user_id]||[]).push(v)});
@@ -497,6 +517,8 @@ async function loadData(){
   document.getElementById('lab-table').innerHTML='<div class="empty-state"><span class="material-icons-outlined">biotech</span><p>No booked tests</p></div>';
   document.getElementById('uploads-table').innerHTML='<div class="empty-state"><span class="material-icons-outlined">upload_file</span><p>No uploads</p></div>';
   document.getElementById('ins-table').innerHTML=renderInsurance(ins,usersById);
+  document.getElementById('hospitals-list').innerHTML=renderHospitals(hosps,a,o);
+  document.getElementById('hosp-count').textContent=hosps.length;
   document.getElementById('users-list').innerHTML=renderUsers(u,famBy,vitBy);
   document.getElementById('full-activity').innerHTML=act.length?act.map(renderActivityItem).join(''):'<div class="empty-state"><span class="material-icons-outlined">timeline</span><p>No events</p></div>';
   document.getElementById('all-events-count').textContent=act.length;
