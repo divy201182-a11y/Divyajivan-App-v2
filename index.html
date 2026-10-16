@@ -5954,8 +5954,8 @@ return(
 <div className="flex items-center gap-1.5 mt-3 pt-3 text-sm text-slate-400" style={{borderTop:'1px solid #F1F5F9'}}><I name="apartment" size={15} className="flex-shrink-0"/>{(doctor.hospital||'').replace(' · ',', ')}</div>
 </div>
 {/* Who is it for */}
-<h3 className="text-xl font-bold text-slate-800 mb-3">Who is it for?</h3>
-<div className="flex gap-4 mb-6 overflow-x-auto no-scroll pb-1">
+<h3 className="text-xl font-bold text-slate-800 mb-2">Who is it for?</h3>
+<div className="flex gap-4 mb-5 overflow-x-auto no-scroll py-2 px-1" style={{scrollbarWidth:'none'}}>
 {patients.map((p,i)=>{const sel=patient===p.name;return(
 <button key={p.name+i} onClick={()=>setPatient(p.name)} className="flex flex-col items-center gap-2 flex-shrink-0" style={{width:72}}>
 <div className="relative" style={{width:60,height:60}}>
