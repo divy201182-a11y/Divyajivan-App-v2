@@ -418,12 +418,29 @@ function renderBarChart(activity){
   }).join('')+'</div>';
 }
 
-function renderUsers(users){
+function chip(label,val){return val?'<span style="display:inline-block;background:var(--cream2);color:var(--txt2);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:7px;margin:2px 4px 2px 0"><span style="color:var(--txt3)">'+label+'</span> '+val+'</span>':'';}
+function renderUsers(users,famBy,vitBy){
   if(!users.length)return '<div class="empty-state"><span class="material-icons-outlined">person_off</span><p>No users registered yet</p></div>';
   return users.map(u=>{
     const initials=(u.name||'?').split(' ').map(w=>w[0]).join('');
-    return '<div class="user-card"><div class="user-av">'+initials+'</div><div class="user-info"><h4>'+u.name+'</h4><p>'+u.email+'</p><p style="font-size:10px;color:var(--txt3);margin-top:2px">Joined: '+formatTime(u.created_at)+' &bull; Last login: '+formatTime(u.last_login)+'</p></div></div>';
+    const addr=u.profile_address?formatAddress(u.profile_address):'';
+    const prof=[chip('Age',u.age),chip('Sex',u.gender),chip('Blood',u.blood_group),chip('DOB',u.dob),chip('Mobile',u.phone),chip('ID',u.member_id)].join('');
+    const fam=(famBy[u.id]||[]);
+    const famHtml=fam.length?'<div style="margin-top:8px"><span style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;font-weight:600">Family ('+fam.length+')</span><div style="margin-top:3px">'+fam.map(f=>'<span style="display:inline-block;background:var(--pri-light);color:var(--pri);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:7px;margin:2px 4px 2px 0">'+f.name+(f.age?' · '+f.age:'')+(f.gender?' · '+f.gender:'')+'</span>').join('')+'</div></div>':'';
+    const vit=(vitBy[u.id]||[]);
+    const vLabels={temp:'Temp',bp:'BP',pulse:'Pulse',spo2:'SpO2',height:'Height',weight:'Weight',waist:'Waist'};
+    const vitHtml=vit.length?'<div style="margin-top:8px"><span style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px;font-weight:600">Latest Vitals</span><div style="margin-top:3px">'+vit.map(v=>'<span style="display:inline-block;background:#EDF3F9;color:var(--blue);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:7px;margin:2px 4px 2px 0">'+(vLabels[v.vital_key]||v.vital_key)+': '+v.value+'</span>').join('')+'</div></div>':'';
+    return '<div class="user-card" style="align-items:flex-start"><div class="user-av">'+initials+'</div><div class="user-info" style="flex:1"><h4>'+u.name+'</h4><p>'+u.email+'</p>'+(prof.trim()?'<div style="margin-top:6px">'+prof+'</div>':'')+(addr?'<p style="font-size:11px;color:var(--txt2);margin-top:6px"><span class="material-icons-outlined" style="font-size:13px;vertical-align:-2px">location_on</span> '+addr+'</p>':'')+famHtml+vitHtml+'<p style="font-size:10px;color:var(--txt3);margin-top:8px">Joined: '+formatTime(u.created_at)+' &bull; Last login: '+formatTime(u.last_login)+'</p></div></div>';
   }).join('');
+}
+const insKindLabels={policy:'Saved Policy',plan_enquiry:'Plan Enquiry',health_quote:'Health Plan Quote',critical_quote:'Critical Illness Quote',enquiry:'Enquiry'};
+function renderInsurance(rows,usersById){
+  if(!rows||!rows.length)return '<div class="empty-state"><span class="material-icons-outlined">verified_user</span><p>No insurance enquiries yet</p></div>';
+  return '<table><thead><tr><th>Time</th><th>User</th><th>Type</th><th>Company / Plan</th><th>Policy #</th><th>Cover</th></tr></thead><tbody>'+rows.map(r=>{
+    const user=r.user_id&&usersById[r.user_id]?usersById[r.user_id]:'—';
+    const cp=[r.company,r.plan_name].filter(Boolean).join(' · ')||'—';
+    return '<tr><td>'+formatTime(r.created_at)+'</td><td>'+user+'</td><td><span class="status upcoming">'+(insKindLabels[r.kind]||r.kind)+'</span></td><td>'+cp+'</td><td style="font-family:monospace;font-size:11px">'+(r.policy_number||'—')+'</td><td>'+(r.cover_amount?'₹'+r.cover_amount:'—')+'</td></tr>';
+  }).join('')+'</tbody></table>';
 }
 
 async function clearActivityLog(){
@@ -432,14 +449,20 @@ async function clearActivityLog(){
 }
 
 async function loadData(){
-  const [{data:users},{data:orders},{data:appointments},{data:activity}]=await Promise.all([
+  const [{data:users},{data:orders},{data:appointments},{data:activity},{data:insurance},{data:family},{data:vitals}]=await Promise.all([
     _supa.from('app_users').select('*').order('created_at',{ascending:false}),
     _supa.from('app_orders').select('*,app_order_items(*),app_users(name)').order('created_at',{ascending:false}),
     _supa.from('app_appointments').select('*').order('created_at',{ascending:false}),
-    _supa.from('app_activity_log').select('*').order('created_at',{ascending:false})
+    _supa.from('app_activity_log').select('*').order('created_at',{ascending:false}),
+    _supa.from('app_insurance').select('*').order('created_at',{ascending:false}),
+    _supa.from('app_family_members').select('*'),
+    _supa.from('app_vitals').select('*')
   ]);
 
-  const u=users||[], o=orders||[], a=appointments||[], act=activity||[];
+  const u=users||[], o=orders||[], a=appointments||[], act=activity||[], ins=insurance||[], famRows=family||[], vitRows=vitals||[];
+  const usersById={}; u.forEach(x=>{usersById[x.id]=x.name});
+  const famBy={}; famRows.forEach(f=>{(famBy[f.user_id]=famBy[f.user_id]||[]).push(f)});
+  const vitBy={}; vitRows.forEach(v=>{(vitBy[v.user_id]=vitBy[v.user_id]||[]).push(v)});
 
   const logins=act.filter(e=>e.action==='login');
   const totalRev=o.reduce((s,e)=>s+(e.total_amount||0),0);
@@ -471,8 +494,8 @@ async function loadData(){
   document.getElementById('all-con-count').textContent=a.length;
   document.getElementById('lab-table').innerHTML='<div class="empty-state"><span class="material-icons-outlined">biotech</span><p>No booked tests</p></div>';
   document.getElementById('uploads-table').innerHTML='<div class="empty-state"><span class="material-icons-outlined">upload_file</span><p>No uploads</p></div>';
-  document.getElementById('ins-table').innerHTML='<div class="empty-state"><span class="material-icons-outlined">verified_user</span><p>No enquiries</p></div>';
-  document.getElementById('users-list').innerHTML=renderUsers(u);
+  document.getElementById('ins-table').innerHTML=renderInsurance(ins,usersById);
+  document.getElementById('users-list').innerHTML=renderUsers(u,famBy,vitBy);
   document.getElementById('full-activity').innerHTML=act.length?act.map(renderActivityItem).join(''):'<div class="empty-state"><span class="material-icons-outlined">timeline</span><p>No events</p></div>';
   document.getElementById('all-events-count').textContent=act.length;
 }
