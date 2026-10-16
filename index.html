@@ -5246,25 +5246,29 @@ const[appointments,setAppointments]=useState([]);
 const[vitals,setVitals]=useState(INITIAL_VITALS);
 useEffect(()=>{
 if(!authUser)return;
-syncUserToBackend(authUser);
 window._djAuthEmail=authUser.email||'';
 store.setUser(authUser.id);
 const savedProfile=store.get('profile',null);
-if(savedProfile){setUserProfile({...USER_INIT,...savedProfile})}
+let prof;
+if(savedProfile){prof={...USER_INIT,...savedProfile}}
 else{
 const nm=authUser.user_metadata?.full_name||authUser.email?.split('@')[0]||'User';
 const parts=nm.split(/\s+/).filter(Boolean);
 const initials=parts.length<2?parts[0]?.substring(0,2).toUpperCase()||'U':(parts[0][0]+parts[parts.length-1][0]).toUpperCase();
 const ph=authUser.user_metadata?.phone||'';
-setUserProfile({...USER_INIT,name:nm,initials,mobile:ph,memberId:'DJH'+Date.now().toString().slice(-8)});
+prof={...USER_INIT,name:nm,initials,mobile:ph,memberId:'DJH'+Date.now().toString().slice(-8)};
 }
+setUserProfile(prof);
+const fam=store.get('family',[]);
+const vit=store.get('vitals',INITIAL_VITALS);
 setOrders(store.get('orders',[]));
-setFamily(store.get('family',[]));
+setFamily(fam);
 setAppointments(store.get('appointments',[]));
-setVitals(store.get('vitals',INITIAL_VITALS));
+setVitals(vit);
 setChatHistory(store.get('chat_history',[]));
 setCart([]);
 setScreen('home');
+(async()=>{await syncUserToBackend(authUser);syncProfileToBackend(prof,authUser.email);syncFamilyToBackend(fam,authUser.email);syncVitalsToBackend(vit,authUser.email)})();
 },[authUser]);
 useEffect(()=>{if(!authUser)return;const iv=setInterval(()=>{syncStatusesFromSupabase(orders,setOrders,appointments,setAppointments)},20000);syncStatusesFromSupabase(orders,setOrders,appointments,setAppointments);return()=>clearInterval(iv)},[authUser,orders.length,appointments.length]);
 useEffect(()=>{if(authUser){store.set('orders',orders)}},[orders]);
