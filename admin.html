@@ -359,13 +359,22 @@ function renderOrderPipeline(order){
   }).join('')+'</div>';
 }
 
+function formatAddress(a){
+  if(!a)return '<span style="color:var(--txt3)">—</span>';
+  if(typeof a==='string'){try{a=JSON.parse(a)}catch(e){return a}}
+  if(!a||!a.line)return '<span style="color:var(--txt3)">—</span>';
+  const parts=[a.line,a.city,a.district,a.state].filter(Boolean).join(', ');
+  return '<span style="font-size:12px">'+parts+(a.pin?' - '+a.pin:'')+'</span>';
+}
+const payLabels={cod:'Cash on Delivery',upi:'UPI',card:'Card',netbanking:'Net Banking'};
 function renderOrdersTable(orders,limit){
   const show=limit?orders.slice(0,limit):orders;
   if(!show.length)return '<div class="empty-state"><span class="material-icons-outlined">inbox</span><p>No orders yet</p></div>';
-  return '<table><thead><tr><th>Time</th><th>Order #</th><th>User</th><th>Items</th><th>Total</th><th>Status</th></tr></thead><tbody>'+show.map(o=>{
+  return '<table><thead><tr><th>Time</th><th>Order #</th><th>User</th><th>Items</th><th>Delivery Address</th><th>Payment</th><th>Total</th><th>Status</th></tr></thead><tbody>'+show.map(o=>{
     const items=(o.app_order_items||[]).map(i=>i.medicine_name).join(', ')||'-';
     const user=o.app_users?o.app_users.name:'—';
-    return '<tr><td>'+formatTime(o.created_at)+'</td><td style="font-family:monospace;font-size:11px">'+o.order_number+'</td><td>'+user+'</td><td>'+items+'</td><td style="font-weight:600">₹'+o.total_amount+'</td><td>'+renderOrderPipeline(o)+'</td></tr>';
+    const pay=o.payment_method?(payLabels[o.payment_method]||o.payment_method):'<span style="color:var(--txt3)">—</span>';
+    return '<tr><td>'+formatTime(o.created_at)+'</td><td style="font-family:monospace;font-size:11px">'+o.order_number+'</td><td>'+user+'</td><td>'+items+'</td><td style="max-width:200px">'+formatAddress(o.delivery_address)+'</td><td style="font-size:12px">'+pay+'</td><td style="font-weight:600">₹'+o.total_amount+'</td><td>'+renderOrderPipeline(o)+'</td></tr>';
   }).join('')+'</tbody></table>';
 }
 
