@@ -1279,7 +1279,9 @@ return matchSpec&&matchSearch;
 const specRef=useRef(null);
 return(
 <div className="fade-in" style={{background:'#FFFFFF'}}>
-<SubHeader title="Consult a Doctor" onBack={onBack}/>
+<div className="flex items-center justify-center px-4 py-3 bg-white">
+<h1 className="text-xl font-bold text-slate-800">Book a Doctor</h1>
+</div>
 {/* Search */}
 <div className="px-4 mb-3">
 <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-slate-200/80" style={{boxShadow:'0 1px 3px rgba(0,0,0,0.04)'}}>
