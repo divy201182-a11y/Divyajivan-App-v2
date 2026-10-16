@@ -370,9 +370,11 @@ const payLabels={cod:'Cash on Delivery',upi:'UPI',card:'Card',netbanking:'Net Ba
 function renderOrdersTable(orders,limit){
   const show=limit?orders.slice(0,limit):orders;
   if(!show.length)return '<div class="empty-state"><span class="material-icons-outlined">inbox</span><p>No orders yet</p></div>';
-  return '<table><thead><tr><th>Time</th><th>Order #</th><th>User</th><th>Items</th><th>Delivery Address</th><th>Payment</th><th>Total</th><th>Status</th></tr></thead><tbody>'+show.map(o=>{
+  return '<table><thead><tr><th>Time</th><th>Order #</th><th>Ordered By</th><th>Medicines</th><th>Delivery Address</th><th>Payment</th><th>Total</th><th>Status</th></tr></thead><tbody>'+show.map(o=>{
     const items=(o.app_order_items||[]).map(i=>i.medicine_name).join(', ')||'-';
-    const user=o.app_users?o.app_users.name:'—';
+    const uname=o.user_name||(o.app_users?o.app_users.name:'')||'';
+    const uemail=o.user_email||(o.app_users?o.app_users.email:'')||'';
+    const user=uname?('<div style="font-weight:600">'+uname+'</div>'+(uemail?'<div style="font-size:10.5px;color:var(--txt3)">'+uemail+'</div>':'')):'<span style="color:var(--txt3)">Unknown</span>';
     const pay=o.payment_method?(payLabels[o.payment_method]||o.payment_method):'<span style="color:var(--txt3)">—</span>';
     return '<tr><td>'+formatTime(o.created_at)+'</td><td style="font-family:monospace;font-size:11px">'+o.order_number+'</td><td>'+user+'</td><td>'+items+'</td><td style="max-width:200px">'+formatAddress(o.delivery_address)+'</td><td style="font-size:12px">'+pay+'</td><td style="font-weight:600">₹'+o.total_amount+'</td><td>'+renderOrderPipeline(o)+'</td></tr>';
   }).join('')+'</tbody></table>';
@@ -451,7 +453,7 @@ async function clearActivityLog(){
 async function loadData(){
   const [{data:users},{data:orders},{data:appointments},{data:activity},{data:insurance},{data:family},{data:vitals}]=await Promise.all([
     _supa.from('app_users').select('*').order('created_at',{ascending:false}),
-    _supa.from('app_orders').select('*,app_order_items(*),app_users(name)').order('created_at',{ascending:false}),
+    _supa.from('app_orders').select('*,app_order_items(*),app_users(name,email)').order('created_at',{ascending:false}),
     _supa.from('app_appointments').select('*').order('created_at',{ascending:false}),
     _supa.from('app_activity_log').select('*').order('created_at',{ascending:false}),
     _supa.from('app_insurance').select('*').order('created_at',{ascending:false}),
