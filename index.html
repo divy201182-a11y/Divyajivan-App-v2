@@ -5916,21 +5916,16 @@ const BookAppointmentScreen=({doctor,onBack,showToast,family,userProfile,appoint
 const sh={boxShadow:'0 1px 3px rgba(0,0,0,0.04)'};
 const patients=[{name:userProfile.name||'You',short:'You',initials:userProfile.initials||genInitials(userProfile.name||'You'),color:'#8B5CF6'},...family.map(f=>({name:f.name,short:(f.name||'').split(' ')[0],initials:f.initials||genInitials(f.name),color:f.color||'#3B82F6'}))];
 const[patient,setPatient]=useState(patients[0].name);
-const dates=[];{let dd=new Date();while(dates.length<12){if(dd.getDay()!==0)dates.push(new Date(dd));dd.setDate(dd.getDate()+1)}}
-const[selDate,setSelDate]=useState(0);
-const[selTime,setSelTime]=useState('');
 const[symptoms,setSymptoms]=useState([]);
 const[symSearch,setSymSearch]=useState('');
 const[since,setSince]=useState('');
 const[notes,setNotes]=useState('');
-const times=['10:00 AM','10:15 AM','10:30 AM','10:45 AM','11:00 AM','11:15 AM','11:30 AM','11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM'];
-const morning=times.filter(t=>t.includes('AM')),afternoon=times.filter(t=>t.includes('PM'));
-const monthLbl=dates[selDate].toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+const curPatient=patients.find(p=>p.name===patient)||patients[0];
+const patientLabel=curPatient.name===patients[0].name?'you':curPatient.short;
 const toggleSym=(s)=>setSymptoms(p=>p.includes(s)?p.filter(x=>x!==s):[...p,s]);
 const addCustomSym=()=>{const v=symSearch.trim();if(v&&!symptoms.includes(v)){setSymptoms(p=>[...p,v]);setSymSearch('')}};
-const TimeBtn=({t})=>(<button onClick={()=>setSelTime(t)} className="py-3 rounded-2xl text-sm font-medium transition-colors" style={selTime===t?{background:'#3B82F6',color:'#fff'}:{background:'#fff',border:'1px solid #E2E8F0',color:'#334155'}}>{t}</button>);
-const Pill=({label,active,onClick})=>(<button onClick={onClick} className="px-4 py-2 rounded-full text-sm font-medium transition-colors" style={active?{background:'#3B82F6',color:'#fff'}:{background:'#fff',border:'1px solid #E2E8F0',color:'#475569'}}>{label}</button>);
-const confirm=()=>{if(!selTime)return;const d=dates[selDate];const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:d.toISOString(),time:selTime,status:'booked',type:'In-person',symptoms,since,notes,bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);syncAppointmentToBackend({doctor_name:doctor.name,specialty:doctor.spec||'',date:d.toISOString().split('T')[0],time:selTime,type:'in-person',patient_name:patient,symptoms,since,notes,hospital:doctor.hospital});showToast('Appointment requested! The doctor will confirm.');onBack()};
+const Pill=({label,active,onClick})=>(<button onClick={onClick} className="px-3.5 py-2 rounded-full text-[13px] font-medium transition-colors" style={active?{background:'#3B82F6',color:'#fff'}:{background:'#fff',border:'1px solid #E2E8F0',color:'#475569'}}>{label}</button>);
+const confirm=()=>{const now=new Date();const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:now.toISOString(),time:'To be confirmed',status:'booked',type:'In-person',symptoms,since,notes,bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);syncAppointmentToBackend({doctor_name:doctor.name,specialty:doctor.spec||'',date:now.toISOString().split('T')[0],time:'To be confirmed',type:'in-person',patient_name:patient,symptoms,since,notes,hospital:doctor.hospital});showToast('Appointment requested! The doctor will propose a time.');onBack()};
 return(
 <div className="fade-in" style={{background:'#F6F8FB',minHeight:'100%',display:'flex',flexDirection:'column'}}>
 <div className="flex items-center justify-between px-4 py-3" style={{background:'#F6F8FB'}}>
@@ -5938,23 +5933,23 @@ return(
 <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100"><I name="arrow_back_ios_new" size={20} className="text-slate-700"/></button>
 <span className="text-lg font-bold text-slate-800">Book appointment</span>
 </div>
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200"><I name="close" size={20} className="text-slate-600"/></button>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white flex-shrink-0" style={{boxShadow:'0 1px 5px rgba(0,0,0,0.12)'}}><I name="close" size={18} className="text-slate-600"/></button>
 </div>
 <div className="flex-1 overflow-y-auto no-scroll px-4" style={{paddingBottom:'100px'}}>
 {/* Doctor card */}
 <div className="bg-white rounded-2xl p-4 mb-5" style={sh}>
 <div className="flex gap-3">
-<DocAvatar id={doctor.id} size={64}/>
+<DocAvatar id={doctor.id} size={60}/>
 <div className="flex-1 min-w-0">
-<p className="text-lg font-bold text-slate-800 leading-tight">{doctor.name}</p>
-<p className="text-sm text-slate-500 flex items-center gap-1.5 mt-1"><I name="schedule" size={15} className="flex-shrink-0"/>Mon–Sat, 10 AM–2 PM, 3–5 PM</p>
-<p className="text-sm text-slate-500 flex items-center gap-1.5 mt-0.5"><I name="account_balance_wallet" size={15} className="flex-shrink-0"/>Consultation ₹{doctor.fee}</p>
+<p className="text-base font-bold text-slate-800 leading-tight">{doctor.name}</p>
+<p className="text-[13px] text-slate-500 flex items-center gap-1.5 mt-1"><I name="schedule" size={14} className="flex-shrink-0"/>Mon–Sat, 10 AM–2 PM, 3–5 PM</p>
+<p className="text-[13px] text-slate-500 flex items-center gap-1.5 mt-0.5"><I name="account_balance_wallet" size={14} className="flex-shrink-0"/>Consultation ₹{doctor.fee}</p>
 </div>
 </div>
-<div className="flex items-center gap-1.5 mt-3 pt-3 text-sm text-slate-400" style={{borderTop:'1px solid #F1F5F9'}}><I name="apartment" size={15} className="flex-shrink-0"/>{(doctor.hospital||'').replace(' · ',', ')}</div>
+<div className="flex items-center gap-1.5 mt-3 pt-3 text-[13px] text-slate-400" style={{borderTop:'1px solid #F1F5F9'}}><I name="apartment" size={14} className="flex-shrink-0"/>{(doctor.hospital||'').replace(' · ',', ')}</div>
 </div>
 {/* Who is it for */}
-<h3 className="text-xl font-bold text-slate-800 mb-2">Who is it for?</h3>
+<h3 className="text-lg font-bold text-slate-800 mb-2">Who is it for?</h3>
 <div className="flex gap-4 mb-5 overflow-x-auto no-scroll py-2 px-1" style={{scrollbarWidth:'none'}}>
 {patients.map((p,i)=>{const sel=patient===p.name;return(
 <button key={p.name+i} onClick={()=>setPatient(p.name)} className="flex flex-col items-center gap-2 flex-shrink-0" style={{width:72}}>
@@ -5966,25 +5961,15 @@ return(
 </button>
 );})}
 </div>
-{/* Pick a day */}
-<div className="flex items-center justify-between mb-3"><h3 className="text-xl font-bold text-slate-800">Pick a day</h3><span className="text-sm font-medium text-slate-400">{monthLbl}</span></div>
-<div className="flex gap-2.5 mb-6 overflow-x-auto no-scroll pb-1">
-{dates.map((d,i)=>{const sel=selDate===i;return(
-<button key={i} onClick={()=>{setSelDate(i);setSelTime('')}} className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl" style={{width:58,height:70,background:sel?'#3B82F6':'#fff',border:sel?'none':'1px solid #E2E8F0'}}>
-<span className="text-xs font-medium" style={{color:sel?'rgba(255,255,255,0.85)':'#94A3B8'}}>{d.toLocaleDateString('en-IN',{weekday:'short'})}</span>
-<span className="text-xl font-bold mt-0.5" style={{color:sel?'#fff':'#1E293B'}}>{d.getDate()}</span>
-</button>
-);})}
-</div>
 {/* Pick a time */}
-<h3 className="text-xl font-bold text-slate-800 mb-3">Pick a time</h3>
-<div className="flex items-center gap-1.5 mb-2"><I name="wb_sunny" size={16} className="text-slate-400"/><span className="text-sm font-semibold text-slate-500">Morning</span></div>
-<div className="grid grid-cols-3 gap-2.5 mb-5">{morning.map(t=><TimeBtn key={t} t={t}/>)}</div>
-<div className="flex items-center gap-1.5 mb-2"><I name="partly_cloudy_day" size={16} className="text-slate-400"/><span className="text-sm font-semibold text-slate-500">Afternoon</span></div>
-<div className="grid grid-cols-3 gap-2.5 mb-6">{afternoon.map(t=><TimeBtn key={t} t={t}/>)}</div>
+<h3 className="text-lg font-bold text-slate-800 mb-2">Pick a time</h3>
+<div className="flex items-start gap-2.5 p-4 rounded-2xl mb-6" style={{background:'#EFF6FF',border:'1px solid #DBEAFE'}}>
+<I name="calendar_month" size={20} style={{color:'#3B82F6'}} className="flex-shrink-0"/>
+<p className="text-[13px] text-slate-600 leading-relaxed">This doctor hasn't published a calendar yet — request an appointment and they'll propose a time you can confirm.</p>
+</div>
 {/* Symptoms */}
-<div className="flex items-baseline justify-between mb-1"><h3 className="text-xl font-bold text-slate-800">Describe your symptoms</h3><span className="text-sm text-slate-400">Optional</span></div>
-<p className="text-sm text-slate-400 mb-3">Shared with your doctor before the visit, as what you told them. The doctor will still ask you.</p>
+<div className="flex items-baseline justify-between mb-1"><h3 className="text-lg font-bold text-slate-800">Describe your symptoms</h3><span className="text-[13px] text-slate-400">Optional</span></div>
+<p className="text-[13px] text-slate-400 mb-3">Shared with your doctor before the visit, as what you told them. The doctor will still ask you.</p>
 <div className="flex flex-wrap gap-2 mb-3">{APPT_SYMPTOMS.map(s=><Pill key={s} label={s} active={symptoms.includes(s)} onClick={()=>toggleSym(s)}/>)}{symptoms.filter(s=>!APPT_SYMPTOMS.includes(s)).map(s=><Pill key={s} label={s} active={true} onClick={()=>toggleSym(s)}/>)}</div>
 <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-slate-200 mb-6">
 <I name="search" size={20} className="text-slate-400"/>
@@ -6003,9 +5988,10 @@ return(
 <p className="text-sm text-slate-600">In-person visit. The doctor confirms it next — you'll be notified.</p>
 </div>
 </div>
-{/* Sticky Book now */}
-<div className="px-4 py-3" style={{background:'#F6F8FB',borderTop:'1px solid #E8ECF2',paddingBottom:'max(12px,env(safe-area-inset-bottom,12px))'}}>
-<button onClick={confirm} disabled={!selTime} className="w-full py-3.5 rounded-2xl text-base font-bold text-center transition-colors" style={selTime?{background:'#3B82F6',color:'#fff'}:{background:'#94A3B8',color:'#fff'}}>Book now</button>
+{/* Sticky Request appointment */}
+<div className="px-4 pt-2 pb-3" style={{background:'#F6F8FB',borderTop:'1px solid #E8ECF2',paddingBottom:'max(12px,env(safe-area-inset-bottom,12px))'}}>
+<p className="text-center text-xs text-slate-400 mb-2">For {patientLabel} · the doctor proposes a time</p>
+<button onClick={confirm} className="w-full py-3.5 rounded-2xl text-[15px] font-bold text-center" style={{background:'#1E293B',color:'#fff'}}>Request appointment</button>
 </div>
 </div>
 );};
