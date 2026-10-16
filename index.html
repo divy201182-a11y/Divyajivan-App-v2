@@ -1820,6 +1820,202 @@ return(
 </div>
 );};
 
+/* ── CHECKOUT SCREEN ── */
+const CheckoutScreen=({cart,onBack,onPlaceOrder,userProfile,points,usePoints,setUsePoints,showToast})=>{
+const[payMethod,setPayMethod]=useState('cod');
+const[editAddr,setEditAddr]=useState(false);
+const[addr,setAddr]=useState(()=>{
+const a=userProfile?.address||{};
+return{line:a.line||'',city:a.city||'',district:a.district||'',state:a.state||'',pin:a.pin||'',country:a.country||'IN'};
+});
+const[addrForm,setAddrForm]=useState({...addr});
+const hasAddr=addr.line&&addr.city&&addr.pin;
+const subtotal=cart.reduce((s,c)=>s+c.price*c.qty,0);
+const maxRedeemVal=Math.floor(subtotal*REWARDS_CONFIG.maxRedemptionPercentage/100);
+const maxRedeemPts=Math.min(points?points.available:0,maxRedeemVal*REWARDS_CONFIG.pointsToRupeeConversion);
+const pointsDiscount=usePoints?maxRedeemPts/REWARDS_CONFIG.pointsToRupeeConversion:0;
+const deliveryFee=0;
+const total=Math.max(0,subtotal-pointsDiscount+deliveryFee);
+const estDays=3;
+const estDate=new Date(Date.now()+estDays*86400000);
+const fmtEst=estDate.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+
+const payMethods=[
+{id:'cod',label:'Cash on Delivery',icon:'payments',desc:'Pay when your order arrives'},
+{id:'upi',label:'UPI',icon:'account_balance',desc:'Google Pay, PhonePe, Paytm'},
+{id:'card',label:'Credit / Debit Card',icon:'credit_card',desc:'Visa, Mastercard, RuPay'},
+{id:'netbanking',label:'Net Banking',icon:'account_balance_wallet',desc:'All major banks'},
+];
+
+const saveAddr=()=>{
+if(!addrForm.line||!addrForm.city||!addrForm.pin){showToast('Please fill address, city & pincode');return}
+setAddr({...addrForm});
+setEditAddr(false);
+};
+
+const handlePlace=()=>{
+if(!hasAddr){showToast('Please add a delivery address');if(!editAddr)setEditAddr(true);return}
+onPlaceOrder({address:addr,paymentMethod:payMethod,pointsDiscount,total});
+};
+
+return(
+<div className="fade-in" style={{background:'#F8FAFC'}}>
+<SubHeader title="Checkout" onBack={onBack}/>
+<div className="overflow-y-auto pb-32" style={{height:'calc(100dvh - 56px)'}}>
+
+{/* Delivery Address */}
+<div className="mx-4 mt-3 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+<div className="flex items-center justify-between mb-3">
+<div className="flex items-center gap-2">
+<I name="location_on" size={20} className="text-pri-600"/>
+<p className="text-sm font-bold text-slate-800">Delivery Address</p>
+</div>
+<button onClick={()=>{setAddrForm({...addr});setEditAddr(!editAddr)}} className="text-xs font-bold text-pri-600">{editAddr?'Cancel':hasAddr?'Change':'Add'}</button>
+</div>
+{editAddr?(
+<div className="space-y-2.5">
+<input value={addrForm.line} onChange={e=>setAddrForm({...addrForm,line:e.target.value})} placeholder="House / Flat / Street *" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-pri-500"/>
+<div className="grid grid-cols-2 gap-2">
+<input value={addrForm.city} onChange={e=>setAddrForm({...addrForm,city:e.target.value})} placeholder="City *" className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-pri-500"/>
+<input value={addrForm.district} onChange={e=>setAddrForm({...addrForm,district:e.target.value})} placeholder="District" className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-pri-500"/>
+</div>
+<div className="grid grid-cols-2 gap-2">
+<input value={addrForm.state} onChange={e=>setAddrForm({...addrForm,state:e.target.value})} placeholder="State" className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-pri-500"/>
+<input value={addrForm.pin} onChange={e=>setAddrForm({...addrForm,pin:e.target.value})} placeholder="Pincode *" className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-pri-500" maxLength="6" inputMode="numeric"/>
+</div>
+<button onClick={saveAddr} className="w-full py-2.5 bg-pri-600 text-white text-sm font-bold rounded-xl">Save Address</button>
+</div>
+):(
+hasAddr?(
+<div className="flex items-start gap-3 bg-pri-50/50 rounded-xl p-3">
+<div className="w-9 h-9 rounded-full bg-pri-100 flex items-center justify-center flex-shrink-0"><I name="home" size={18} className="text-pri-600"/></div>
+<div className="flex-1">
+<p className="text-sm font-semibold text-slate-800">Home</p>
+<p className="text-xs text-slate-500 leading-relaxed mt-0.5">{addr.line}{addr.city?', '+addr.city:''}{addr.district?', '+addr.district:''}{addr.state?' · '+addr.state:''}{addr.pin?' - '+addr.pin:''}</p>
+</div>
+<I name="check_circle" size={20} className="text-pri-500 mt-0.5"/>
+</div>
+):(
+<button onClick={()=>setEditAddr(true)} className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-sm text-slate-400 hover:border-pri-300">
+<I name="add_location" size={18}/>Add delivery address
+</button>
+)
+)}
+</div>
+
+{/* Order Items */}
+<div className="mx-4 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+<div className="px-4 py-3 flex items-center justify-between border-b border-slate-50">
+<p className="text-sm font-bold text-slate-800">Items ({cart.length})</p>
+<button onClick={onBack} className="text-xs font-bold text-pri-600">Edit Cart</button>
+</div>
+{cart.map(c=>(
+<div key={c.id} className="flex items-center gap-3 px-4 py-2.5">
+<div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden" style={{backgroundColor:c.imgUrl?'#fff':'#F8FAFC'}}>
+{c.imgUrl?<img src={c.imgUrl} alt={c.name} className="w-full h-full object-cover"/>:<I name={c.img||'medication'} size={18} className="text-slate-400"/>}
+</div>
+<div className="flex-1 min-w-0">
+<p className="text-sm font-medium text-slate-700 truncate">{c.name}</p>
+<p className="text-xs text-slate-400">{c.pack} × {c.qty}</p>
+</div>
+<p className="text-sm font-bold text-slate-700">{'₹'}{c.price*c.qty}</p>
+</div>
+))}
+</div>
+
+{/* Delivery Estimate */}
+<div className="mx-4 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center"><I name="local_shipping" size={20} className="text-blue-500"/></div>
+<div className="flex-1">
+<p className="text-sm font-bold text-slate-800">Estimated Delivery</p>
+<p className="text-xs text-slate-500">By <span className="font-semibold text-pri-600">{fmtEst}</span> · Free delivery</p>
+</div>
+<I name="schedule" size={18} className="text-slate-300"/>
+</div>
+</div>
+
+{/* Payment Method */}
+<div className="mx-4 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+<p className="text-sm font-bold text-slate-800 mb-3">Payment Method</p>
+<div className="space-y-2">
+{payMethods.map(pm=>(
+<button key={pm.id} onClick={()=>setPayMethod(pm.id)} className={`w-full flex items-center gap-3 p-3 rounded-xl border transition ${payMethod===pm.id?'border-pri-500 bg-pri-50/50':'border-slate-100 hover:border-slate-200'}`}>
+<div className={`w-9 h-9 rounded-full flex items-center justify-center ${payMethod===pm.id?'bg-pri-100':'bg-slate-50'}`}>
+<I name={pm.icon} size={18} style={{color:payMethod===pm.id?'#059669':'#94A3B8'}}/>
+</div>
+<div className="flex-1 text-left">
+<p className={`text-sm font-semibold ${payMethod===pm.id?'text-slate-800':'text-slate-600'}`}>{pm.label}</p>
+<p className="text-[11px] text-slate-400">{pm.desc}</p>
+</div>
+<div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${payMethod===pm.id?'border-pri-600':'border-slate-300'}`}>
+{payMethod===pm.id&&<div className="w-2.5 h-2.5 rounded-full bg-pri-600"/>}
+</div>
+</button>
+))}
+</div>
+</div>
+
+{/* Coupon */}
+<div className="mx-4 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+<button onClick={()=>showToast('No coupons available right now')} className="w-full flex items-center justify-between">
+<div className="flex items-center gap-2">
+<I name="local_offer" size={18} className="text-orange-500"/>
+<span className="text-sm font-semibold text-slate-700">Apply Coupon</span>
+</div>
+<I name="chevron_right" size={18} className="text-slate-300"/>
+</button>
+</div>
+
+{/* Jivan Points */}
+{points&&points.available>=REWARDS_CONFIG.minimumRedemptionPoints&&(
+<div className="mx-4 mb-3 bg-pri-50 rounded-2xl p-3.5 border border-pri-100">
+<div className="flex items-center justify-between mb-1">
+<div className="flex items-center gap-2">
+<I name="stars" size={20} className="text-pri-600"/>
+<span className="text-sm font-bold text-pri-800">Use Jivan Points</span>
+</div>
+<button onClick={()=>setUsePoints(!usePoints)} className={`w-11 h-6 rounded-full transition-all flex items-center ${usePoints?'bg-pri-600 justify-end':'bg-slate-300 justify-start'}`}>
+<div className="w-5 h-5 bg-white rounded-full shadow-sm mx-0.5"/>
+</button>
+</div>
+<p className="text-xs text-pri-600">Available: {points.available.toLocaleString()} Points (Worth {'₹'}{(points.available/points.conversion).toLocaleString()})</p>
+{usePoints&&<p className="text-xs font-semibold text-pri-700 mt-1">Saving {'₹'}{pointsDiscount} with {maxRedeemPts.toLocaleString()} Points</p>}
+</div>
+)}
+
+{/* Price Details */}
+<div className="mx-4 mb-3 bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
+<p className="text-sm font-bold text-slate-800 mb-3">Price Details</p>
+<div className="space-y-2">
+<div className="flex justify-between"><span className="text-sm text-slate-500">Item Total ({cart.reduce((s,c)=>s+c.qty,0)} items)</span><span className="text-sm font-medium text-slate-700">{'₹'}{subtotal}</span></div>
+<div className="flex justify-between"><span className="text-sm text-slate-500">Delivery Charges</span><span className="text-sm font-semibold text-pri-600">FREE</span></div>
+{usePoints&&pointsDiscount>0&&(
+<div className="flex justify-between"><span className="text-sm text-pri-600">Jivan Points</span><span className="text-sm font-semibold text-pri-600">-{'₹'}{pointsDiscount}</span></div>
+)}
+<div className="h-px bg-slate-100 my-1"/>
+<div className="flex justify-between"><span className="text-base font-bold text-slate-800">Total Amount</span><span className="text-base font-bold text-slate-800">{'₹'}{total}</span></div>
+</div>
+</div>
+
+<div className="h-6"/>
+</div>
+
+{/* Bottom Bar */}
+<div className="fixed bottom-0 left-0 right-0 bg-white px-4 py-3 border-t border-slate-100 shadow-lg" style={{paddingBottom:'max(12px,env(safe-area-inset-bottom))',maxWidth:430,margin:'0 auto'}}>
+<div className="flex items-center justify-between mb-2">
+<div>
+<p className="text-xs text-slate-400">Total</p>
+<p className="text-xl font-extrabold text-slate-800">{'₹'}{total}</p>
+</div>
+<button onClick={handlePlace} className="px-8 py-3.5 bg-pri-600 text-white text-base font-bold rounded-2xl shadow-md hover:bg-pri-700 transition flex items-center gap-2">
+<I name="shopping_bag" size={18} className="text-white"/>Place Order
+</button>
+</div>
+</div>
+</div>
+);};
+
 /* ── VITALS: SHARED CONFIG ── */
 const TONE_COLORS={ok:'#059669',warn:'#D97706',high:'#DC2626',low:'#2563EB',neutral:'#94A3B8'};
 
@@ -3235,9 +3431,17 @@ return(
 <I name="location_on" size={20} className="text-pri-600 mt-0.5"/>
 <div>
 <p className="text-sm font-semibold text-slate-700">Home</p>
-<p className="text-xs text-slate-400 leading-relaxed">123 Health Street, Surat,<br/>Gujarat - 395007</p>
+{order.address&&order.address.line?
+<p className="text-xs text-slate-400 leading-relaxed">{order.address.line}{order.address.city?', '+order.address.city:''}{order.address.district?', '+order.address.district:''}{order.address.state?<><br/>{order.address.state}</>:null}{order.address.pin?' - '+order.address.pin:''}</p>
+:<p className="text-xs text-slate-400 leading-relaxed">Address not provided</p>}
 </div>
 </div>
+{order.paymentMethod&&(
+<div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-50">
+<I name={order.paymentMethod==='cod'?'payments':order.paymentMethod==='upi'?'account_balance':order.paymentMethod==='card'?'credit_card':'account_balance_wallet'} size={16} className="text-slate-400"/>
+<p className="text-xs text-slate-500">Paid via <span className="font-semibold text-slate-600">{order.paymentMethod==='cod'?'Cash on Delivery':order.paymentMethod==='upi'?'UPI':order.paymentMethod==='card'?'Card':'Net Banking'}</span></p>
+</div>
+)}
 </div>
 {/* Action Buttons */}
 <div className="mx-4 mb-4 space-y-2">
@@ -5123,16 +5327,18 @@ const openLabDetail=(t)=>{setHistory(h=>[...h,screen]);setScreen('lab-detail');s
 const openDocDetail=(d)=>{setHistory(h=>[...h,screen]);setScreen('doc-detail');setDetail(d);if(scrollRef.current)scrollRef.current.scrollTop=0;};
 
 const handleCheckout=()=>{
+if(cart.length===0){showToast('Cart is empty');return}
+nav('checkout');
+};
+
+const placeOrder=({address,paymentMethod,pointsDiscount,total})=>{
 const subtotal=cart.reduce((s,c)=>s+c.price*c.qty,0);
-let pointsDiscount=0;
-if(usePoints&&points.available>=REWARDS_CONFIG.minimumRedemptionPoints){
-const maxVal=subtotal*REWARDS_CONFIG.maxRedemptionPercentage/100;
-const maxPts=Math.floor(maxVal*points.conversion);
-const usablePts=Math.min(points.available,maxPts);
-pointsDiscount=usablePts/points.conversion;
+if(usePoints&&pointsDiscount>0&&points){
+const usablePts=Math.floor(pointsDiscount*points.conversion);
 if(usablePts>0)points.redeemPoints(usablePts,'DJ'+Date.now(),'Used on Medicine Order');
 }
-const order={id:'ORD'+Date.now(),items:cart.map(c=>({name:c.name,brand:c.brand,pack:c.pack,price:c.price,qty:c.qty,icon:c.img||'medication',imgUrl:c.imgUrl||null,color:c.color||null})),total:subtotal-pointsDiscount,pointsSaved:pointsDiscount,status:'placed',date:Date.now()};
+const estDays=3;
+const order={id:'ORD'+Date.now(),items:cart.map(c=>({name:c.name,brand:c.brand,pack:c.pack,price:c.price,qty:c.qty,icon:c.img||'medication',imgUrl:c.imgUrl||null,color:c.color||null})),total,pointsSaved:pointsDiscount||0,status:'placed',date:Date.now(),address:{...address},paymentMethod,estimatedDelivery:new Date(Date.now()+estDays*86400000).toISOString()};
 setOrders(prev=>[order,...prev]);
 syncOrderToBackend({order_id:order.id,items:order.items.map(i=>({medicine_name:i.name,quantity:i.qty,price:i.price})),total_amount:order.total,user_email:authUser?.email||''});
 setCart([]);setUsePoints(false);
@@ -5155,6 +5361,7 @@ case 'med-detail':return detail?<MedicineDetailScreen item={detail} onBack={goBa
 case 'lab-detail':return detail?<LabTestDetailScreen item={detail} onBack={goBack}/>:null;
 case 'doc-detail':return detail?<DoctorDetailScreen item={detail} onBack={goBack} nav={nav}/>:null;
 case 'cart':return <CartScreen cart={cart} onBack={goBack} updateQty={updateQty} removeItem={removeItem} onCheckout={handleCheckout} points={points} usePoints={usePoints} setUsePoints={setUsePoints}/>;
+case 'checkout':return <CheckoutScreen cart={cart} onBack={goBack} onPlaceOrder={placeOrder} userProfile={userProfile} points={points} usePoints={usePoints} setUsePoints={setUsePoints} showToast={showToast}/>;
 case 'health-records':return <HealthRecordsScreen onBack={goBack} nav={nav} vitals={vitals}/>;
 case 'my-records':return <UnderDevScreen title="My Records" icon="folder_open" onBack={goBack}/>;
 case 'vital-detail':return detail?<VitalDetailScreen vitalKey={detail} onBack={goBack} vitals={vitals} setVitals={setVitals} showToast={showToast}/>:null;
