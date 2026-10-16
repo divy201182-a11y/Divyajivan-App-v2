@@ -49,6 +49,8 @@ body{margin:0;padding:0;font-family:'Inter',system-ui,sans-serif;background:#F1F
 input,textarea,select{font-family:inherit;max-width:100%}
 input[type="date"],input[type="number"]{-webkit-appearance:none;appearance:none;min-width:0}
 .fade-in{animation:fadeIn .25s ease}
+.book-btn{border:1.5px solid #059669;color:#059669;background:#fff}
+.book-btn:hover{background:#059669;color:#fff}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .slide-up{animation:slideUp .3s ease}
 @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -257,13 +259,35 @@ const DOCTORS=[
 {id:3,name:'Dr. Krutika D Patel',degree:'MBBS, MD (Dermatology)',rating:4.6,reviews:'7k+',fee:450,exp:'10',spec:'Dermatology',hospital:'BAPS Pramukh Swami · Surat',about:'Expert dermatologist specializing in skin care, cosmetic procedures and hair treatments.',tags:['Dermatology'],langs:'English, Hindi, Gujarati',color:'#8B5CF6'},
 {id:4,name:'Dr. Mehul Patel',degree:'MBBS, MD (Dermatology)',rating:4.5,reviews:'6k+',fee:400,exp:'8',spec:'Dermatology',hospital:'BAPS Pramukh Swami · Surat',about:'Dermatologist with expertise in skin disorders and aesthetic treatments.',tags:['Dermatology'],langs:'English, Hindi',color:'#EC4899'},
 {id:5,name:'Dr. Payal N Choksi',degree:'MBBS, MD (Dermatology)',rating:4.4,reviews:'5k+',fee:500,exp:'12',spec:'Dermatology',hospital:'BAPS Pramukh Swami · Surat',about:'Senior dermatologist specializing in clinical and cosmetic dermatology.',tags:['Dermatology'],langs:'English, Hindi, Gujarati',color:'#F59E0B'},
-{id:6,name:'Dr. Preeti Reshamwala',degree:'MBBS, MD (Dermatology)',rating:4.6,reviews:'4k+',fee:450,exp:'9',spec:'Dermatology',hospital:'City Hospital · Surat',about:'Dermatologist with focus on laser treatments and skin rejuvenation.',tags:['Dermatology'],langs:'English, Hindi',color:'#06B6D4'},
-{id:7,name:'Dr. Priya Sharma',degree:'MBBS, MD (Pediatrics)',rating:4.9,reviews:'15k+',fee:599,exp:'18',spec:'Pediatrics',hospital:'Children Care Hospital · Surat',about:'Leading pediatrician with 18+ years of experience in child healthcare, vaccination programs, and developmental assessments.',tags:['Pediatrics'],langs:'English, Hindi',color:'#EC4899'},
-{id:8,name:'Dr. Amit Desai',degree:'MBBS, DM (Cardiology)',rating:4.8,reviews:'11k+',fee:899,exp:'20',spec:'Cardiology',hospital:'Heart Care Centre · Surat',about:'Renowned cardiologist with 20+ years of expertise in interventional cardiology and heart failure management.',tags:['Cardiology'],langs:'English, Hindi, Gujarati',color:'#EF4444'},
-{id:9,name:'Dr. Sneha Joshi',degree:'MBBS, MS (Obstetrics & Gynecology)',rating:4.7,reviews:'8k+',fee:600,exp:'14',spec:'Obstetrics & Gynecology',hospital:'Maternity Care · Surat',about:'Experienced OB-GYN specializing in high-risk pregnancies and minimally invasive gynecological surgery.',tags:['Obstetrics & Gynecology'],langs:'English, Hindi, Gujarati',color:'#F472B6'},
-{id:10,name:'Dr. Rakesh Modi',degree:'MBBS, MS (Orthopedics)',rating:4.6,reviews:'7k+',fee:700,exp:'16',spec:'Orthopedics',hospital:'Bone & Joint Centre · Surat',about:'Orthopedic surgeon specializing in joint replacement and sports medicine.',tags:['Orthopedics'],langs:'English, Hindi',color:'#3B82F6'},
-{id:11,name:'Dr. Nayan Patel',degree:'MBBS, MS (ENT)',rating:4.5,reviews:'5k+',fee:500,exp:'11',spec:'ENT (Otorhinolaryngology)',hospital:'ENT Care · Surat',about:'ENT specialist with expertise in sinus surgery and hearing disorders.',tags:['ENT (Otorhinolaryngology)'],langs:'English, Hindi, Gujarati',color:'#F59E0B'},
-{id:12,name:'Dr. Anita Sharma',degree:'MBBS, MS (General Surgery)',rating:4.7,reviews:'6k+',fee:800,exp:'15',spec:'General Surgery',hospital:'Surgical Care · Surat',about:'General surgeon with expertise in laparoscopic and minimally invasive procedures.',tags:['General Surgery'],langs:'English, Hindi',color:'#059669'},
+{id:6,name:'Dr. Preeti Reshamwala',degree:'MBBS, MS (Ophthalmology)',rating:4.6,reviews:'4k+',fee:450,exp:'9',spec:'Ophthalmology',hospital:'Savani Eye Hospital and Lasik Center · Surat',about:'Ophthalmologist specializing in cataract surgery, LASIK and retinal care.',tags:['Ophthalmology'],langs:'English, Hindi',color:'#06B6D4'},
+{id:7,name:'Dr. Priya Sharma',degree:'MBBS, MD (Pediatrics)',rating:4.9,reviews:'15k+',fee:599,exp:'18',spec:'Pediatrics',hospital:'BAPS Pramukh Swami · Surat',about:'Leading pediatrician with 18+ years of experience in child healthcare, vaccination programs, and developmental assessments.',tags:['Pediatrics'],langs:'English, Hindi',color:'#EC4899'},
+{id:8,name:'Dr. Amit Desai',degree:'MBBS, DM (Cardiology)',rating:4.8,reviews:'11k+',fee:899,exp:'20',spec:'Cardiology',hospital:'BAPS Pramukh Swami · Surat',about:'Renowned cardiologist with 20+ years of expertise in interventional cardiology and heart failure management.',tags:['Cardiology'],langs:'English, Hindi, Gujarati',color:'#EF4444'},
+{id:9,name:'Dr. Sneha Joshi',degree:'MBBS, MS (Obstetrics & Gynecology)',rating:4.7,reviews:'8k+',fee:600,exp:'14',spec:'Obstetrics & Gynecology',hospital:'BAPS Pramukh Swami · Surat',about:'Experienced OB-GYN specializing in high-risk pregnancies and minimally invasive gynecological surgery.',tags:['Obstetrics & Gynecology'],langs:'English, Hindi, Gujarati',color:'#F472B6'},
+{id:10,name:'Dr. Rakesh Modi',degree:'MBBS, MS (Orthopedics)',rating:4.6,reviews:'7k+',fee:700,exp:'16',spec:'Orthopedics',hospital:'Shreeji Surgical Hospital · Surat',about:'Orthopedic surgeon specializing in joint replacement and sports medicine.',tags:['Orthopedics'],langs:'English, Hindi',color:'#3B82F6'},
+{id:11,name:'Dr. Nayan Patel',degree:'MBBS, MS (ENT)',rating:4.5,reviews:'5k+',fee:500,exp:'11',spec:'ENT (Otorhinolaryngology)',hospital:'BAPS Pramukh Swami · Surat',about:'ENT specialist with expertise in sinus surgery and hearing disorders.',tags:['ENT (Otorhinolaryngology)'],langs:'English, Hindi, Gujarati',color:'#F59E0B'},
+{id:12,name:'Dr. Anita Sharma',degree:'MBBS, MS (General Surgery)',rating:4.7,reviews:'6k+',fee:800,exp:'15',spec:'General Surgery',hospital:'Shreeji Surgical Hospital · Surat',about:'General surgeon with expertise in laparoscopic and minimally invasive procedures.',tags:['General Surgery'],langs:'English, Hindi',color:'#059669'},
+{id:13,name:'Dr. Rohan Mehta',degree:'MBBS, DM (Neurology)',rating:4.7,reviews:'6k+',fee:800,exp:'15',spec:'Neurology',hospital:'BAPS Pramukh Swami · Surat',about:'Neurologist specializing in stroke care, epilepsy and movement disorders.',tags:['Neurology'],langs:'English, Hindi, Gujarati',color:'#6366F1'},
+{id:14,name:'Dr. Anjali Verma',degree:'MBBS, MD (Psychiatry)',rating:4.6,reviews:'5k+',fee:700,exp:'12',spec:'Psychiatry',hospital:'BAPS Pramukh Swami · Surat',about:'Psychiatrist with expertise in anxiety, depression and cognitive behavioural therapy.',tags:['Psychiatry'],langs:'English, Hindi',color:'#8B5CF6'},
+{id:15,name:'Dr. Vikram Shah',degree:'MBBS, MD (Pulmonology)',rating:4.7,reviews:'7k+',fee:650,exp:'14',spec:'Pulmonology',hospital:'BAPS Pramukh Swami · Surat',about:'Pulmonologist treating asthma, COPD and respiratory infections.',tags:['Pulmonology'],langs:'English, Hindi, Gujarati',color:'#0EA5E9'},
+{id:16,name:'Dr. Neha Gupta',degree:'MBBS, DM (Gastroenterology)',rating:4.8,reviews:'8k+',fee:750,exp:'13',spec:'Gastroenterology',hospital:'BAPS Pramukh Swami · Surat',about:'Gastroenterologist specializing in digestive disorders and endoscopy.',tags:['Gastroenterology'],langs:'English, Hindi',color:'#F59E0B'},
+{id:17,name:'Dr. Arjun Nair',degree:'MBBS, DM (Nephrology)',rating:4.6,reviews:'4k+',fee:700,exp:'11',spec:'Nephrology',hospital:'BAPS Pramukh Swami · Surat',about:'Nephrologist managing kidney disease, dialysis and hypertension.',tags:['Nephrology'],langs:'English, Hindi',color:'#3B82F6'},
+{id:18,name:'Dr. Pooja Iyer',degree:'MBBS, DM (Endocrinology)',rating:4.7,reviews:'6k+',fee:700,exp:'12',spec:'Endocrinology',hospital:'BAPS Pramukh Swami · Surat',about:'Endocrinologist specializing in diabetes, thyroid and hormonal disorders.',tags:['Endocrinology'],langs:'English, Hindi, Gujarati',color:'#10B981'},
+{id:19,name:'Dr. Sanjay Rao',degree:'MBBS, MCh (Urology)',rating:4.6,reviews:'5k+',fee:800,exp:'16',spec:'Urology',hospital:'BAPS Pramukh Swami · Surat',about:'Urologist with expertise in kidney stones and minimally invasive urology.',tags:['Urology'],langs:'English, Hindi',color:'#EF4444'},
+{id:20,name:'Dr. Meera Krishnan',degree:'MBBS, DM (Oncology)',rating:4.8,reviews:'7k+',fee:900,exp:'17',spec:'Oncology',hospital:'BAPS Pramukh Swami · Surat',about:'Oncologist specializing in medical oncology and chemotherapy.',tags:['Oncology'],langs:'English, Hindi',color:'#EC4899'},
+{id:21,name:'Dr. Karan Malhotra',degree:'MBBS, MD (Radiology)',rating:4.5,reviews:'4k+',fee:600,exp:'10',spec:'Radiology',hospital:'BAPS Pramukh Swami · Surat',about:'Radiologist experienced in diagnostic imaging, CT and MRI.',tags:['Radiology'],langs:'English, Hindi',color:'#6366F1'},
+{id:22,name:'Dr. Divya Menon',degree:'MBBS, MD (Anesthesiology)',rating:4.6,reviews:'3k+',fee:650,exp:'11',spec:'Anesthesiology',hospital:'BAPS Pramukh Swami · Surat',about:'Anesthesiologist focused on surgical anesthesia and pain management.',tags:['Anesthesiology'],langs:'English, Hindi',color:'#475569'},
+{id:23,name:'Dr. Ritu Agarwal',degree:'BDS, MDS (Dentistry)',rating:4.7,reviews:'9k+',fee:400,exp:'10',spec:'Dentistry',hospital:'BAPS Pramukh Swami · Surat',about:'Dentist specializing in cosmetic dentistry, root canal and implants.',tags:['Dentistry'],langs:'English, Hindi, Gujarati',color:'#059669'},
+{id:24,name:'Dr. Suresh Pillai',degree:'MBBS, DM (Cardiology)',rating:4.8,reviews:'10k+',fee:850,exp:'19',spec:'Cardiology',hospital:'BAPS Pramukh Swami · Surat',about:'Cardiologist with expertise in angioplasty and preventive cardiology.',tags:['Cardiology'],langs:'English, Hindi',color:'#EF4444'},
+{id:25,name:'Dr. Kavya Reddy',degree:'MBBS, MD (Pediatrics)',rating:4.7,reviews:'8k+',fee:550,exp:'12',spec:'Pediatrics',hospital:'BAPS Pramukh Swami · Surat',about:'Pediatrician caring for newborns, vaccinations and child growth.',tags:['Pediatrics'],langs:'English, Hindi',color:'#EC4899'},
+{id:26,name:'Dr. Manish Jain',degree:'MBBS, MS (Orthopedics)',rating:4.6,reviews:'6k+',fee:700,exp:'14',spec:'Orthopedics',hospital:'BAPS Pramukh Swami · Surat',about:'Orthopedic surgeon specializing in spine and joint care.',tags:['Orthopedics'],langs:'English, Hindi, Gujarati',color:'#3B82F6'},
+{id:27,name:'Dr. Shweta Desai',degree:'MBBS, MD (Medicine)',rating:4.7,reviews:'7k+',fee:400,exp:'13',spec:'General Medicine',hospital:'BAPS Pramukh Swami · Surat',about:'Physician focused on preventive care and chronic disease management.',tags:['General Medicine'],langs:'English, Hindi, Gujarati',color:'#059669'},
+{id:28,name:'Dr. Alok Banerjee',degree:'MBBS, MS (General Surgery)',rating:4.6,reviews:'5k+',fee:750,exp:'15',spec:'General Surgery',hospital:'BAPS Pramukh Swami · Surat',about:'General surgeon experienced in laparoscopic and emergency surgery.',tags:['General Surgery'],langs:'English, Hindi',color:'#059669'},
+{id:29,name:'Dr. Tara Kapoor',degree:'MBBS, MS (Ophthalmology)',rating:4.7,reviews:'6k+',fee:500,exp:'12',spec:'Ophthalmology',hospital:'Savani Eye Hospital and Lasik Center · Surat',about:'Ophthalmologist specializing in LASIK, cataract and corneal care.',tags:['Ophthalmology'],langs:'English, Hindi',color:'#06B6D4'},
+{id:30,name:'Dr. Nikhil Bhatt',degree:'MBBS, MD (Medicine)',rating:4.7,reviews:'6k+',fee:400,exp:'13',spec:'General Medicine',hospital:'BAPS Pramukh Swami · Surat',about:'Physician focused on preventive care and lifestyle disease management.',tags:['General Medicine'],langs:'English, Hindi, Gujarati',color:'#059669'},
+{id:31,name:'Dr. Sunita Chauhan',degree:'MBBS, MD (Pediatrics)',rating:4.6,reviews:'5k+',fee:550,exp:'11',spec:'Pediatrics',hospital:'BAPS Pramukh Swami · Surat',about:'Pediatrician specializing in neonatal care and childhood immunization.',tags:['Pediatrics'],langs:'English, Hindi',color:'#EC4899'},
+{id:32,name:'Dr. Rahul Khanna',degree:'MBBS, DM (Cardiology)',rating:4.8,reviews:'9k+',fee:850,exp:'18',spec:'Cardiology',hospital:'BAPS Pramukh Swami · Surat',about:'Cardiologist specializing in heart rhythm disorders and preventive care.',tags:['Cardiology'],langs:'English, Hindi',color:'#EF4444'},
+{id:33,name:'Dr. Priyanka Saxena',degree:'MBBS, MD (Dermatology)',rating:4.6,reviews:'5k+',fee:450,exp:'10',spec:'Dermatology',hospital:'BAPS Pramukh Swami · Surat',about:'Dermatologist focused on skin, hair and cosmetic treatments.',tags:['Dermatology'],langs:'English, Hindi, Gujarati',color:'#8B5CF6'},
+{id:34,name:'Dr. Deepak Trivedi',degree:'MBBS, MS (Orthopedics)',rating:4.7,reviews:'6k+',fee:700,exp:'15',spec:'Orthopedics',hospital:'BAPS Pramukh Swami · Surat',about:'Orthopedic surgeon specializing in trauma and joint replacement.',tags:['Orthopedics'],langs:'English, Hindi',color:'#3B82F6'},
 ];
 
 const LAB_TESTS=[
@@ -274,28 +298,28 @@ const LAB_TESTS=[
 ];
 
 const SPECIALTIES=[
-{name:'All',icon:'apps',color:'#000'},
-{name:'General Medicine',icon:'medical_services',color:'#059669'},
-{name:'General Practice / Family Medicine',icon:'family_restroom',color:'#3B82F6'},
-{name:'Pediatrics',icon:'child_care',color:'#EC4899'},
-{name:'Obstetrics & Gynecology',icon:'pregnant_woman',color:'#F472B6'},
-{name:'General Surgery',icon:'healing',color:'#059669'},
-{name:'Orthopedics',icon:'accessibility_new',color:'#3B82F6'},
-{name:'Cardiology',icon:'favorite',color:'#EF4444'},
-{name:'Dermatology',icon:'face_retouching_natural',color:'#8B5CF6'},
-{name:'ENT (Otorhinolaryngology)',icon:'hearing',color:'#F59E0B'},
-{name:'Ophthalmology',icon:'visibility',color:'#06B6D4'},
-{name:'Neurology',icon:'psychology',color:'#6366F1'},
-{name:'Psychiatry',icon:'self_improvement',color:'#8B5CF6'},
-{name:'Pulmonology',icon:'air',color:'#0EA5E9'},
-{name:'Gastroenterology',icon:'restaurant',color:'#F59E0B'},
-{name:'Nephrology',icon:'water_drop',color:'#3B82F6'},
-{name:'Endocrinology',icon:'biotech',color:'#10B981'},
-{name:'Urology',icon:'health_and_safety',color:'#EF4444'},
-{name:'Oncology',icon:'monitor_heart',color:'#EC4899'},
-{name:'Radiology',icon:'radiology',color:'#6366F1'},
-{name:'Anesthesiology',icon:'vaccines',color:'#475569'},
-{name:'Dentistry',icon:'dentistry',color:'#059669'},
+{name:'All',icon:'apps',color:'#1e3a8a',img:'specialty-icons/01-all.svg'},
+{name:'General Medicine',icon:'medical_services',color:'#059669',img:'specialty-icons/02-general-medicine.svg'},
+{name:'General Practice / Family Medicine',short:'Family Medicine',icon:'family_restroom',color:'#3B82F6',img:'specialty-icons/03-general-practice---family-medicine.svg'},
+{name:'Pediatrics',icon:'child_care',color:'#EC4899',img:'specialty-icons/04-pediatrics.svg'},
+{name:'Obstetrics & Gynecology',icon:'pregnant_woman',color:'#F472B6',img:'specialty-icons/05-obstetrics---gynecology.svg'},
+{name:'General Surgery',icon:'healing',color:'#059669',img:'specialty-icons/06-general-surgery.svg'},
+{name:'Orthopedics',icon:'accessibility_new',color:'#3B82F6',img:'specialty-icons/07-orthopedics.svg'},
+{name:'Cardiology',icon:'favorite',color:'#EF4444',img:'specialty-icons/08-cardiology.svg'},
+{name:'Dermatology',icon:'face_retouching_natural',color:'#8B5CF6',img:'specialty-icons/09-dermatology.svg'},
+{name:'ENT (Otorhinolaryngology)',short:'ENT',icon:'hearing',color:'#F59E0B',img:'specialty-icons/10-ent--otorhinolaryngology.svg'},
+{name:'Ophthalmology',icon:'visibility',color:'#06B6D4',img:'specialty-icons/11-ophthalmology.svg'},
+{name:'Neurology',icon:'psychology',color:'#6366F1',img:'specialty-icons/12-neurology.svg'},
+{name:'Psychiatry',icon:'self_improvement',color:'#8B5CF6',img:'specialty-icons/13-psychiatry.svg'},
+{name:'Pulmonology',icon:'air',color:'#0EA5E9',img:'specialty-icons/14-pulmonology.svg'},
+{name:'Gastroenterology',icon:'restaurant',color:'#F59E0B',img:'specialty-icons/15-gastroenterology.svg'},
+{name:'Nephrology',icon:'water_drop',color:'#3B82F6',img:'specialty-icons/16-nephrology.svg'},
+{name:'Endocrinology',icon:'biotech',color:'#10B981',img:'specialty-icons/17-endocrinology.svg'},
+{name:'Urology',icon:'health_and_safety',color:'#EF4444',img:'specialty-icons/18-urology.svg'},
+{name:'Oncology',icon:'monitor_heart',color:'#EC4899',img:'specialty-icons/19-oncology.svg'},
+{name:'Radiology',icon:'radiology',color:'#6366F1',img:'specialty-icons/20-radiology.svg'},
+{name:'Anesthesiology',icon:'vaccines',color:'#475569',img:'specialty-icons/21-anesthesiology.svg'},
+{name:'Dentistry',icon:'dentistry',color:'#059669',img:'specialty-icons/22-dentistry.svg'},
 ];
 
 const HOME_SERVICES=[
@@ -1267,57 +1291,129 @@ return(
 );};
 
 /* ── SCREEN: CONSULT ── */
+const DOC_AVATARS=[
+{bg:'#FCE7F3',cap:'#60A5FA',skin:'#F2C9A0',coat:'#C7D2FE',glasses:false},
+{bg:'#FEF3C7',cap:'#34D399',skin:'#E3AC84',coat:'#FBCFE8',glasses:true},
+{bg:'#DBEAFE',cap:'#2DD4BF',skin:'#F2C9A0',coat:'#99F6E4',glasses:false},
+{bg:'#F3E8FF',cap:'#A78BFA',skin:'#CF9A66',coat:'#DDD6FE',glasses:true},
+{bg:'#DCFCE7',cap:'#38BDF8',skin:'#F2C9A0',coat:'#BAE6FD',glasses:false},
+{bg:'#FFE4E6',cap:'#FB7185',skin:'#E3AC84',coat:'#FECDD3',glasses:true},
+];
+const DocAvatar=({id,size=54,round=true})=>{
+const n=String((((((id||1)-1)%40)+40)%40)+1).padStart(2,'0');
+return <img src={'doctor-avatars/doctor-'+n+'.svg'} alt="" width={size} height={size} style={{flexShrink:0,display:'block',borderRadius:round?'50%':'20%',objectFit:'cover'}}/>;
+};
 const ConsultScreen=({nav,onDetail,onBack})=>{
 const[specFilter,setSpecFilter]=useState('All');
 const[searchQ,setSearchQ]=useState('');
+const[hospFilter,setHospFilter]=useState('BAPS Pramukh Swami · Surat');
+const[hospSheetOpen,setHospSheetOpen]=useState(false);
+const[hospSearch,setHospSearch]=useState('');
+const[specSheetOpen,setSpecSheetOpen]=useState(false);
+const HOSP_ORDER=['BAPS Pramukh Swami · Surat','Divyajivan Healthcare · Surat','Savani Eye Hospital and Lasik Center · Surat','Shreeji Surgical Hospital · Surat'];
+const hospCards=HOSP_ORDER.map(h=>{const p=h.split(' · ');return{name:p[0],city:p[1]||'',count:DOCTORS.filter(d=>d.hospital===h||d.hospital2===h).length,raw:h}});
+const hospName=hospFilter.split(' · ')[0];
 const sq=searchQ.toLowerCase();
 const filtDocs=DOCTORS.filter(d=>{
 const matchSpec=specFilter==='All'||d.spec===specFilter;
+const matchHosp=hospFilter==='All Hospitals'||d.hospital===hospFilter||d.hospital2===hospFilter;
 const matchSearch=!sq||d.name.toLowerCase().includes(sq)||d.spec.toLowerCase().includes(sq);
-return matchSpec&&matchSearch;
+return matchSpec&&matchHosp&&matchSearch;
 });
-const specRef=useRef(null);
 return(
-<div className="fade-in" style={{background:'#FFFFFF'}}>
-<div className="flex items-center justify-center px-4 py-3 bg-white">
+<div className="fade-in" style={{background:'#F8FAFB',minHeight:'100%'}}>
+<div className="flex items-center justify-center px-4 py-3" style={{background:'#F8FAFB'}}>
 <h1 className="text-xl font-bold text-slate-800">Book a Doctor</h1>
 </div>
 {/* Search */}
-<div className="px-4 mb-3">
+<div className="px-4 pt-3 mb-3">
 <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-slate-200/80" style={{boxShadow:'0 1px 3px rgba(0,0,0,0.04)'}}>
 <I name="search" size={20} className="text-slate-400"/>
 <input type="text" placeholder="Search doctor or specialty" className="flex-1 bg-transparent outline-none text-sm text-slate-700" value={searchQ} onChange={e=>setSearchQ(e.target.value)}/>
 {searchQ&&<button onClick={()=>setSearchQ('')}><I name="close" size={18} className="text-slate-400"/></button>}
 </div>
 </div>
-{/* Specialty Filter */}
-<div ref={specRef} className="flex gap-2 px-4 mb-4 overflow-x-auto no-scroll pb-1" style={{scrollbarWidth:'none'}}>
-{SPECIALTIES.map(s=>(
-<button key={s.name} onClick={()=>setSpecFilter(s.name)} className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${specFilter===s.name?'text-white':'bg-white text-slate-600 border border-slate-200'}`} style={specFilter===s.name?{backgroundColor:'#059669'}:{}}>{s.name}</button>
-))}
+{/* Hospital selector */}
+<div className="px-4 mb-4">
+<button onClick={()=>{setHospSearch('');setHospSheetOpen(true)}} className="w-full flex items-center gap-3 bg-white rounded-2xl px-4 py-3 border border-slate-200/80" style={{boxShadow:'0 1px 3px rgba(0,0,0,0.04)'}}>
+<img src="hospital-icon.png" alt="" className="w-10 h-10 rounded-xl flex-shrink-0" style={{objectFit:'contain'}}/>
+<div className="flex-1 min-w-0 text-left">
+<p className="text-[11px] text-slate-400 font-medium">Hospital</p>
+<p className="text-sm font-bold text-slate-800 truncate">{hospName}</p>
 </div>
+<I name="expand_more" size={22} className="text-slate-400 flex-shrink-0"/>
+</button>
+</div>
+{/* Specialities */}
+<div className="px-4 mb-2 flex items-center justify-between"><h2 className="text-base font-bold text-slate-800">Specialities</h2><button onClick={()=>setSpecSheetOpen(true)} className="text-xs font-bold" style={{color:'#059669'}}>See all</button></div>
+<div className="flex gap-3 px-4 mb-3 overflow-x-auto no-scroll py-2" style={{scrollbarWidth:'none',alignItems:'flex-start'}}>
+{SPECIALTIES.map(s=>{
+const active=specFilter===s.name;
+return(
+<button key={s.name} onClick={()=>setSpecFilter(s.name)} title={s.name} className="flex-shrink-0 flex flex-col items-center gap-1.5" style={{width:72}}>
+<div className="w-14 h-14 rounded-2xl overflow-hidden" style={{boxShadow:active?('0 0 0 2.5px '+s.color):'none'}}>
+<img src={s.img} alt="" className="w-full h-full" style={{display:'block'}}/>
+</div>
+<span className="text-[9px] font-semibold text-center leading-[1.15]" style={{color:active?s.color:'#64748B',display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden',height:'22px'}}>{s.short||s.name}</span>
+</button>
+);
+})}
+</div>
+{/* Count */}
+<div className="px-4 mb-2"><p className="text-xs font-semibold text-slate-400">{filtDocs.length} doctor{filtDocs.length===1?'':'s'} available</p></div>
 {/* Doctor List */}
 <div className="px-4 space-y-3 pb-4">
 {filtDocs.length===0?<p className="text-center text-slate-400 py-8">No doctors found</p>:filtDocs.map(d=>(
-<button key={d.id} onClick={()=>onDetail(d)} className="w-full bg-white rounded-2xl p-4 border border-slate-100/80 text-left" style={{boxShadow:'0 1px 3px rgba(0,0,0,0.04)'}}>
-<div className="flex items-center gap-3">
-<div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0 text-white text-lg font-semibold" style={{backgroundColor:d.color||'#059669'}}>
-{d.name.split(' ').filter(w=>w!=='Dr.').map(w=>w[0]).slice(0,2).join('')}
-</div>
-<div className="flex-1 min-w-0">
-<p className="text-base font-bold text-slate-800">{d.name}</p>
-<p className="text-sm text-slate-500">{d.spec}</p>
-<p className="text-xs text-slate-400">{d.hospital}</p>
-{(d.exp||d.fee)&&<div className="flex items-center gap-3 mt-1">
-{d.exp&&<span className="flex items-center gap-1 text-xs text-slate-500"><I name="work_history" size={14}/>{d.exp} yrs</span>}
-{d.fee&&<span className="flex items-center gap-1 text-xs font-semibold" style={{color:'#059669'}}><I name="payments" size={14}/>₹{d.fee}</span>}
-</div>}
-</div>
-<I name="chevron_right" size={22} className="text-slate-300 flex-shrink-0"/>
-</div>
+<div key={d.id} className="w-full bg-white rounded-2xl p-3 border border-slate-100 flex items-center gap-3" style={{boxShadow:'0 1px 3px rgba(0,0,0,0.04)'}}>
+<DocAvatar id={d.id}/>
+<button onClick={()=>onDetail(d)} className="flex-1 min-w-0 text-left">
+<p className="text-base font-bold text-slate-800 truncate">{d.name}</p>
+<p className="text-sm font-semibold truncate" style={{color:d.color||'#059669'}}>{d.spec}</p>
+<p className="text-xs text-slate-400 truncate">{hospFilter}</p>
 </button>
+<button onClick={()=>nav('book-appt',d)} className="book-btn px-4 py-2 rounded-xl text-sm font-bold flex-shrink-0 transition-colors">Book</button>
+</div>
 ))}
 </div>
+{hospSheetOpen&&<div onClick={()=>setHospSheetOpen(false)} style={{position:'fixed',inset:0,zIndex:100,background:'rgba(15,23,42,0.4)',display:'flex',alignItems:'flex-end'}}>
+<div onClick={e=>e.stopPropagation()} className="bg-white w-full fade-in" style={{borderTopLeftRadius:24,borderTopRightRadius:24,maxHeight:'85%',display:'flex',flexDirection:'column',padding:'10px 20px calc(24px + env(safe-area-inset-bottom,0px))'}}>
+<div className="flex justify-center py-2"><div style={{width:40,height:4,borderRadius:4,background:'#CBD5E1'}}/></div>
+<h3 className="text-xl font-bold text-slate-800 mb-1">Choose a hospital</h3>
+<p className="text-sm text-slate-400 mb-4">Choose where you want to be seen, then pick a doctor there.</p>
+<div className="flex items-center gap-2 bg-slate-50 rounded-2xl px-4 py-3 border border-slate-200 mb-3">
+<I name="search" size={20} className="text-slate-400"/>
+<input type="text" placeholder="Search hospitals" className="flex-1 bg-transparent outline-none text-sm text-slate-700" value={hospSearch} onChange={e=>setHospSearch(e.target.value)}/>
+</div>
+<div className="overflow-y-auto space-y-2" style={{flex:1}}>
+{hospCards.filter(hc=>!hospSearch||hc.name.toLowerCase().includes(hospSearch.toLowerCase())).map(hc=>{
+const sel=hc.raw===hospFilter;
+return(
+<button key={hc.raw} onClick={()=>{setHospFilter(hc.raw);setHospSheetOpen(false)}} className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left" style={{border:sel?'1.5px solid #3B82F6':'1px solid #E2E8F0',background:sel?'#EFF6FF':'#FFFFFF'}}>
+<img src="hospital-icon.png" alt="" className="w-10 h-10 rounded-xl flex-shrink-0" style={{objectFit:'contain'}}/>
+<div className="flex-1 min-w-0">
+<p className="text-sm font-bold text-slate-800 truncate">{hc.name}</p>
+<p className="text-xs text-slate-400">{hc.city?hc.city+' · ':''}{hc.count} doctor{hc.count===1?'':'s'}</p>
+</div>
+{sel?<I name="check" size={20} style={{color:'#3B82F6'}}/>:<I name="chevron_right" size={20} className="text-slate-300"/>}
+</button>
+);})}
+</div>
+</div>
+</div>}
+{specSheetOpen&&<div onClick={()=>setSpecSheetOpen(false)} style={{position:'fixed',inset:0,zIndex:100,background:'rgba(15,23,42,0.4)',display:'flex',alignItems:'flex-end'}}>
+<div onClick={e=>e.stopPropagation()} className="bg-white w-full fade-in" style={{borderTopLeftRadius:24,borderTopRightRadius:24,maxHeight:'82%',overflowY:'auto',padding:'10px 20px calc(24px + env(safe-area-inset-bottom,0px))'}}>
+<div className="flex justify-center py-2"><div style={{width:40,height:4,borderRadius:4,background:'#CBD5E1'}}/></div>
+<div className="flex items-center justify-between mb-4">
+<h3 className="text-lg font-bold text-slate-800">All specialities</h3>
+<button onClick={()=>setSpecSheetOpen(false)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{background:'#F1F5F9'}}><I name="close" size={20} className="text-slate-600"/></button>
+</div>
+<div className="flex flex-wrap gap-2">
+{SPECIALTIES.map(s=>{const active=specFilter===s.name;return(
+<button key={s.name} onClick={()=>{setSpecFilter(s.name);setSpecSheetOpen(false)}} className="px-4 py-2.5 rounded-full text-sm font-semibold" style={active?{background:'#059669',color:'#fff'}:{background:'#fff',color:'#334155',border:'1px solid #E2E8F0'}}>{s.name}</button>
+);})}
+</div>
+</div>
+</div>}
 </div>
 );};
 
@@ -1683,58 +1779,82 @@ const LabTestDetailScreen=({item,onBack})=>(
 );
 
 /* ── SCREEN: DOCTOR DETAIL ── */
-const DoctorDetailScreen=({item,onBack,nav})=>{
+const DoctorDetailScreen=({item,onBack,nav,appointments=[]})=>{
+const hospitals=[item.hospital,item.hospital2].filter(Boolean);
+const hospCount=hospitals.length;
+const past=(appointments||[]).filter(a=>a.doctor===item.name).sort((a,b)=>(b.bookedAt||0)-(a.bookedAt||0));
+const stLabel=(s)=>({confirmed:'Confirmed',booked:'Upcoming',completed:'Completed',cancelled:'Cancelled'}[s]||s);
+const stStyle=(s)=>({confirmed:{background:'#E0F2FE',color:'#3A6D9B'},booked:{background:'#FBF5E6',color:'#A67B15'},completed:{background:'#E8F5EF',color:'#0E7A5A'},cancelled:{background:'#F1F5F9',color:'#64748B'}}[s]||{background:'#F1F5F9',color:'#64748B'});
+const sh={boxShadow:'0 1px 3px rgba(0,0,0,0.04)'};
+const hospCol=[{bg:'#DBEAFE',c:'#3B82F6'},{bg:'#D1FAE5',c:'#059669'}];
 return(
-<div className="fade-in" style={{background:'#FFFFFF'}}>
-<div className="flex items-center justify-between px-4 py-3 bg-white">
+<div className="fade-in" style={{background:'#F6F8FB',minHeight:'100%',display:'flex',flexDirection:'column'}}>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'#F6F8FB'}}>
 <div className="flex items-center gap-2">
 <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100"><I name="arrow_back_ios_new" size={20} className="text-slate-700"/></button>
 <span className="text-lg font-bold text-slate-800">Doctor</span>
 </div>
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100"><I name="close" size={22} className="text-slate-700"/></button>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200"><I name="close" size={20} className="text-slate-600"/></button>
 </div>
-{/* Doctor Header */}
-<div className="flex flex-col items-center py-6 bg-white">
-<div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3" style={{background:'linear-gradient(135deg,#059669,#047857)'}}>
-{item.name.split(' ').filter(w=>w!=='Dr.').map(w=>w[0]).slice(0,2).join('')}
+<div className="flex-1 overflow-y-auto no-scroll px-4" style={{paddingBottom:'110px'}}>
+{/* Profile card */}
+<div className="bg-white rounded-3xl p-5 mb-3 flex flex-col items-center" style={sh}>
+<DocAvatar id={item.id} size={104}/>
+<h1 className="text-2xl font-bold text-slate-800 text-center mt-3">{item.name}</h1>
+<div className="grid grid-cols-3 gap-3 w-full mt-4">
+<div className="bg-slate-50 rounded-2xl py-3 flex flex-col items-center"><I name="work_history" size={20} className="text-slate-400"/><span className="text-lg font-bold text-slate-800 mt-1 whitespace-nowrap">{item.exp} yrs</span><span className="text-xs text-slate-400">Experience</span></div>
+<div className="bg-slate-50 rounded-2xl py-3 flex flex-col items-center"><I name="payments" size={20} className="text-slate-400"/><span className="text-lg font-bold text-slate-800 mt-1">₹{item.fee}</span><span className="text-xs text-slate-400 truncate px-1">Consultation</span></div>
+<div className="bg-slate-50 rounded-2xl py-3 flex flex-col items-center"><I name="apartment" size={20} className="text-slate-400"/><span className="text-lg font-bold text-slate-800 mt-1">{hospCount}</span><span className="text-xs text-slate-400">Hospital{hospCount>1?'s':''}</span></div>
 </div>
-<h1 className="text-xl font-bold text-slate-800 text-center px-4">{item.name}</h1>
-<div className="flex items-center gap-3 mt-2 text-sm text-slate-500">
-{item.exp&&<span className="flex items-center gap-1"><I name="work_history" size={16}/>{item.exp} years</span>}
-{item.fee&&<span className="flex items-center gap-1"><I name="payments" size={16}/>₹{item.fee}</span>}
 </div>
+{/* Practises at */}
+<div className="bg-white rounded-3xl p-5 mb-3" style={sh}>
+<h3 className="text-base font-bold text-slate-800 mb-2">Practises at</h3>
+{hospitals.map((h,i)=>{const p=h.split(' · ');return(
+<div key={h} className="flex items-center gap-3 py-2.5" style={{borderBottom:'1px solid #F1F5F9'}}>
+<img src="hospital-icon.png" alt="" className="w-10 h-10 rounded-xl flex-shrink-0" style={i>0?{filter:'hue-rotate(-85deg) saturate(1.15)'}:{}}/>
+<div className="min-w-0"><p className="text-base font-semibold text-slate-800 truncate">{p[0]}</p><p className="text-sm text-slate-400">{p[1]||''}</p></div>
 </div>
-{/* Action Buttons */}
-<div className="flex gap-3 px-4 mb-6">
-<button onClick={()=>nav('book-appt',item)} className="flex-1 py-3.5 bg-pri-600 text-white rounded-2xl text-sm font-bold text-center hover:bg-pri-700 transition">Book appointment</button>
-<button onClick={()=>nav('doc-chat',item)} className="w-12 h-12 flex items-center justify-center rounded-2xl border border-slate-200 bg-white">
-<I name="chat_bubble" size={22} className="text-slate-600"/>
-</button>
+);})}
+<div className="flex items-center gap-3 pt-3">
+<I name="schedule" size={22} className="text-slate-400 flex-shrink-0"/>
+<div><p className="text-xs text-slate-400">Consulting hours</p><p className="text-sm font-medium text-slate-700">Mon–Sat, 10 AM–2 PM, 3–5 PM</p></div>
 </div>
-{/* Practises At */}
-<div className="mx-4 mb-3 p-4 bg-slate-50 rounded-2xl">
-<p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">PRACTISES AT</p>
-<div className="flex items-center gap-2 mb-1.5"><I name="apartment" size={18} className="text-slate-400"/><span className="text-sm text-slate-600">{item.hospital}</span></div>
-{item.hospital2&&<div className="flex items-center gap-2"><I name="apartment" size={18} className="text-slate-400"/><span className="text-sm text-slate-600">{item.hospital2}</span></div>}
 </div>
 {/* Treats */}
-<div className="mx-4 mb-3 p-4 bg-slate-50 rounded-2xl">
-<p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">TREATS</p>
+<div className="bg-white rounded-3xl p-5 mb-3" style={sh}>
+<h3 className="text-base font-bold text-slate-800 mb-3">Treats</h3>
 <div className="flex flex-wrap gap-2">
-{item.tags.map(t=><span key={t} className="px-3 py-1.5 text-sm text-slate-700 bg-white rounded-full border border-slate-200">{t}</span>)}
+{(item.tags&&item.tags.length?item.tags:[item.spec]).map(t=><span key={t} className="px-4 py-2 text-sm font-semibold rounded-full" style={{background:'#EFF6FF',color:'#3B82F6'}}>{t}</span>)}
 </div>
 </div>
 {/* Qualifications */}
-<div className="mx-4 mb-3 p-4 bg-slate-50 rounded-2xl">
-<p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">QUALIFICATIONS</p>
-<p className="text-sm text-slate-700">{item.degree}</p>
+<div className="bg-white rounded-3xl p-5 mb-3" style={sh}>
+<h3 className="text-base font-bold text-slate-800 mb-3">Qualifications</h3>
+<div className="flex items-start gap-2"><I name="school" size={20} className="text-slate-400 flex-shrink-0" style={{marginTop:2}}/><p className="text-base text-slate-700 leading-relaxed">{item.degree}</p></div>
+<p className="text-xs text-slate-400 mt-2">As declared by the doctor and checked by their hospital.</p>
 </div>
 {/* Speaks */}
-{item.langs&&<div className="mx-4 mb-3 p-4 bg-slate-50 rounded-2xl">
-<p className="text-xs font-semibold text-slate-400 tracking-wider mb-2">SPEAKS</p>
-<p className="text-sm text-slate-700">{item.langs}</p>
+{item.langs&&<div className="bg-white rounded-3xl p-5 mb-3" style={sh}>
+<h3 className="text-base font-bold text-slate-800 mb-3">Speaks</h3>
+<p className="text-base text-slate-700">{item.langs}</p>
 </div>}
-<div className="h-6"/>
+{/* Past appointments */}
+{past.length>0&&<div className="bg-white rounded-3xl p-5 mb-3" style={sh}>
+<h3 className="text-base font-bold text-slate-800 mb-2">Your past appointments</h3>
+{past.map((a,i)=>(
+<div key={a.id||i} className="flex items-center justify-between py-3 gap-2" style={i<past.length-1?{borderBottom:'1px solid #F1F5F9'}:{}}>
+<div className="min-w-0"><p className="text-sm font-semibold text-slate-800">{a.date?new Date(a.date).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'}):'Appointment'}{a.time?' · '+a.time:''}</p><p className="text-xs text-slate-400">For {a.patient||'you'}</p></div>
+<span className="px-3 py-1 rounded-full text-xs font-semibold flex-shrink-0" style={stStyle(a.status)}>{stLabel(a.status)}</span>
+</div>
+))}
+</div>}
+</div>
+{/* Sticky bottom bar */}
+<div className="flex gap-3 px-4 py-3" style={{background:'#F6F8FB',borderTop:'1px solid #E8ECF2',paddingBottom:'max(12px,env(safe-area-inset-bottom,12px))'}}>
+<button onClick={()=>nav('doc-chat',item)} className="w-14 h-14 flex items-center justify-center rounded-2xl border border-slate-200 bg-white flex-shrink-0"><I name="chat_bubble" size={22} className="text-slate-500"/></button>
+<button onClick={()=>nav('book-appt',item)} className="flex-1 rounded-2xl text-base font-bold text-center" style={{background:'#EFF6FF',color:'#3B82F6',border:'1.5px solid #BFDBFE'}}>Book appointment</button>
+</div>
 </div>
 );};
 
@@ -4352,7 +4472,7 @@ onAuthStateChange(cb){this._oauthCb=cb;return{data:{subscription:{unsubscribe:()
 
 const syncUserToBackend=async(user)=>{try{const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';const email=user.email||'';const{data:existing}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(existing){await _supa.from('app_users').update({last_login:new Date().toISOString(),name,avatar_url:user.user_metadata?.avatar_url||''}).eq('id',existing.id);await _supa.from('app_activity_log').insert({user_id:existing.id,user_name:name,action:'login'});return existing}const{data:nu}=await _supa.from('app_users').insert({firebase_uid:user.id||'',name,email,phone:user.user_metadata?.phone||'',avatar_url:user.user_metadata?.avatar_url||''}).select('id').single();if(nu)await _supa.from('app_activity_log').insert({user_id:nu.id,user_name:name,action:'register',details:'Synced from app'});return nu}catch(e){return null}};
 const syncOrderToBackend=async(order)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('email',order.user_email||'').maybeSingle();const oname=(u&&u.name)||order.user_name||(order.user_email?order.user_email.split('@')[0]:'')||'';const{data:o}=await _supa.from('app_orders').insert({user_id:u?.id||null,order_number:order.order_id,total_amount:order.total_amount||0}).select('id').single();if(o){await _supa.from('app_orders').update({delivery_address:order.delivery_address||null,payment_method:order.payment_method||null}).eq('id',o.id);await _supa.from('app_orders').update({user_name:oname||null,user_email:order.user_email||null}).eq('id',o.id);if(order.items)for(const i of order.items)await _supa.from('app_order_items').insert({order_id:o.id,medicine_name:i.medicine_name,quantity:i.quantity||1,price:i.price||0})}if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'place_order',details:'Order '+order.order_id+', ₹'+(order.total_amount||0)})}catch(e){}};
-const syncAppointmentToBackend=async(appt)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('name',appt.patient_name||'').maybeSingle();const{data:a}=await _supa.from('app_appointments').insert({user_id:u?.id||null,doctor_name:appt.doctor_name,specialty:appt.specialty||'',date:appt.date,time:appt.time,type:appt.type||'in-person',patient_name:appt.patient_name||''}).select('id').single();if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'book_appointment',details:'With '+appt.doctor_name+' on '+appt.date})}catch(e){}};
+const syncAppointmentToBackend=async(appt)=>{try{const email=window._djAuthEmail||'';const{data:u}=await _supa.from('app_users').select('id,name').eq('email',email).maybeSingle();const{data:a}=await _supa.from('app_appointments').insert({user_id:u?.id||null,doctor_name:appt.doctor_name,specialty:appt.specialty||'',date:appt.date,time:appt.time,type:appt.type||'in-person',patient_name:appt.patient_name||''}).select('id').single();if(a)await _supa.from('app_appointments').update({symptoms:appt.symptoms&&appt.symptoms.length?appt.symptoms:null,since_when:appt.since||null,notes:appt.notes||null,hospital:appt.hospital||null}).eq('id',a.id);if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'book_appointment',details:'With '+appt.doctor_name+' on '+appt.date})}catch(e){}};
 const _djUserId=async(email)=>{try{const{data}=await _supa.from('app_users').select('id').eq('email',email||'').maybeSingle();return data?data.id:null}catch(e){return null}};
 const syncProfileToBackend=async(profile,email)=>{try{if(!profile)return;const id=await _djUserId(email);if(!id)return;await _supa.from('app_users').update({age:(profile.age!==''&&profile.age!=null)?String(profile.age):null,gender:profile.gender||null,blood_group:profile.bloodGroup||null,dob:profile.dob||null,member_id:profile.memberId||null,profile_address:profile.address||null}).eq('id',id)}catch(e){}};
 const syncFamilyToBackend=async(family,email)=>{try{const id=await _djUserId(email);if(!id)return;await _supa.from('app_family_members').delete().eq('user_id',id);if(family&&family.length)await _supa.from('app_family_members').insert(family.map(f=>({user_id:id,member_key:String(f.id),name:f.name||'',age:(f.age!==''&&f.age!=null)?String(f.age):null,gender:f.gender||''})))}catch(e){}};
@@ -5371,7 +5491,7 @@ case 'consult':return <ConsultScreen nav={nav} onDetail={openDocDetail} onBack={
 case 'profile':return <ProfileScreen nav={nav} darkMode={darkMode} toggleDark={toggleDark} family={family} userProfile={userProfile} onLogout={handleLogout}/>;
 case 'med-detail':return detail?<MedicineDetailScreen item={detail} onBack={goBack} onAdd={addToCart} cart={cart} cartCount={cartCount} onCart={()=>nav('cart')} updateQty={updateQty} onAskAI={addChatMsg} nav={nav}/>:null;
 case 'lab-detail':return detail?<LabTestDetailScreen item={detail} onBack={goBack}/>:null;
-case 'doc-detail':return detail?<DoctorDetailScreen item={detail} onBack={goBack} nav={nav}/>:null;
+case 'doc-detail':return detail?<DoctorDetailScreen item={detail} onBack={goBack} nav={nav} appointments={appointments}/>:null;
 case 'cart':return <CartScreen cart={cart} onBack={goBack} updateQty={updateQty} removeItem={removeItem} onCheckout={handleCheckout} points={points} usePoints={usePoints} setUsePoints={setUsePoints}/>;
 case 'checkout':return <CheckoutScreen cart={cart} onBack={goBack} onPlaceOrder={placeOrder} userProfile={userProfile} points={points} usePoints={usePoints} setUsePoints={setUsePoints} showToast={showToast}/>;
 case 'health-records':return <HealthRecordsScreen onBack={goBack} nav={nav} vitals={vitals}/>;
@@ -5790,52 +5910,102 @@ return(
 );};
 
 /* ── SCREEN: BOOK APPOINTMENT ── */
+const APPT_SYMPTOMS=['Fever','Headache','Cough','Cold','Sore throat','Body ache','Stomach pain','Vomiting','Loose motions','Dizziness','Rash','Breathlessness','Chest pain','Back pain','Follow-up visit'];
+const APPT_SINCE=['Since today','Since yesterday','2 days','3 days','4-6 days','1 week','2 weeks','1 month','2-3 months'];
 const BookAppointmentScreen=({doctor,onBack,showToast,family,userProfile,appointments,setAppointments})=>{
-const[patient,setPatient]=useState(userProfile.name||'You');
-const patients=[{name:userProfile.name||'You',label:(userProfile.name||'You')+' (you)'},...family.map(f=>({name:f.name,label:f.name}))];
+const sh={boxShadow:'0 1px 3px rgba(0,0,0,0.04)'};
+const patients=[{name:userProfile.name||'You',short:'You',initials:userProfile.initials||genInitials(userProfile.name||'You'),color:'#8B5CF6'},...family.map(f=>({name:f.name,short:(f.name||'').split(' ')[0],initials:f.initials||genInitials(f.name),color:f.color||'#3B82F6'}))];
+const[patient,setPatient]=useState(patients[0].name);
+const dates=[];{let dd=new Date();while(dates.length<12){if(dd.getDay()!==0)dates.push(new Date(dd));dd.setDate(dd.getDate()+1)}}
 const[selDate,setSelDate]=useState(0);
-const[selTime,setSelTime]=useState(null);
-const dates=[];
-for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()+i);dates.push(d)}
-const fmtD=(d)=>d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+const[selTime,setSelTime]=useState('');
+const[symptoms,setSymptoms]=useState([]);
+const[symSearch,setSymSearch]=useState('');
+const[since,setSince]=useState('');
+const[notes,setNotes]=useState('');
 const times=['10:00 AM','10:15 AM','10:30 AM','10:45 AM','11:00 AM','11:15 AM','11:30 AM','11:45 AM','12:00 PM','12:15 PM','12:30 PM','12:45 PM','1:00 PM','1:15 PM','1:30 PM','1:45 PM','3:00 PM','3:15 PM','3:30 PM','3:45 PM','4:00 PM','4:15 PM','4:30 PM','4:45 PM'];
-const confirm=()=>{if(selTime===null)return;const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:dates[selDate].toISOString(),time:times[selTime],status:'confirmed',type:'In-person',bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);syncAppointmentToBackend({doctor_name:doctor.name,specialty:doctor.specialty||'',date:dates[selDate].toISOString().split('T')[0],time:times[selTime],type:'in-person',patient_name:patient});showToast('Appointment booked!');onBack()};
+const morning=times.filter(t=>t.includes('AM')),afternoon=times.filter(t=>t.includes('PM'));
+const monthLbl=dates[selDate].toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+const toggleSym=(s)=>setSymptoms(p=>p.includes(s)?p.filter(x=>x!==s):[...p,s]);
+const addCustomSym=()=>{const v=symSearch.trim();if(v&&!symptoms.includes(v)){setSymptoms(p=>[...p,v]);setSymSearch('')}};
+const TimeBtn=({t})=>(<button onClick={()=>setSelTime(t)} className="py-3 rounded-2xl text-sm font-medium transition-colors" style={selTime===t?{background:'#3B82F6',color:'#fff'}:{background:'#fff',border:'1px solid #E2E8F0',color:'#334155'}}>{t}</button>);
+const Pill=({label,active,onClick})=>(<button onClick={onClick} className="px-4 py-2 rounded-full text-sm font-medium transition-colors" style={active?{background:'#3B82F6',color:'#fff'}:{background:'#fff',border:'1px solid #E2E8F0',color:'#475569'}}>{label}</button>);
+const confirm=()=>{if(!selTime)return;const d=dates[selDate];const appt={id:'APT'+Date.now(),doctor:doctor.name,patient,date:d.toISOString(),time:selTime,status:'booked',type:'In-person',symptoms,since,notes,bookedAt:Date.now()};setAppointments(prev=>[appt,...prev]);syncAppointmentToBackend({doctor_name:doctor.name,specialty:doctor.spec||'',date:d.toISOString().split('T')[0],time:selTime,type:'in-person',patient_name:patient,symptoms,since,notes,hospital:doctor.hospital});showToast('Appointment requested! The doctor will confirm.');onBack()};
 return(
-<div className="fade-in" style={{background:'#FFFFFF'}}>
-<div className="flex items-center justify-between px-4 py-3 bg-white">
+<div className="fade-in" style={{background:'#F6F8FB',minHeight:'100%',display:'flex',flexDirection:'column'}}>
+<div className="flex items-center justify-between px-4 py-3" style={{background:'#F6F8FB'}}>
 <div className="flex items-center gap-2">
 <button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100"><I name="arrow_back_ios_new" size={20} className="text-slate-700"/></button>
-<span className="text-lg font-bold text-slate-800">Book Appointment</span>
+<span className="text-lg font-bold text-slate-800">Book appointment</span>
 </div>
-<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-100"><I name="close" size={22} className="text-slate-700"/></button>
+<button onClick={onBack} className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200"><I name="close" size={20} className="text-slate-600"/></button>
 </div>
-<div className="px-4 py-4">
-<p className="text-sm text-slate-500 mb-5">{doctor.name}</p>
-<h3 className="text-base font-bold text-slate-800 mb-3">Who is this for?</h3>
-<div className="space-y-2 mb-6">
-{patients.map(p=>(
-<button key={p.name} onClick={()=>setPatient(p.name)} className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-medium flex items-center gap-3 ${patient===p.name?'border-pri-600 bg-pri-50':'border-slate-200'}`}>
-<div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${patient===p.name?'border-pri-600':'border-slate-300'}`}>
-{patient===p.name&&<div className="w-2.5 h-2.5 rounded-full bg-pri-600"/>}
+<div className="flex-1 overflow-y-auto no-scroll px-4" style={{paddingBottom:'100px'}}>
+{/* Doctor card */}
+<div className="bg-white rounded-2xl p-4 mb-5" style={sh}>
+<div className="flex gap-3">
+<DocAvatar id={doctor.id} size={64}/>
+<div className="flex-1 min-w-0">
+<p className="text-lg font-bold text-slate-800 leading-tight">{doctor.name}</p>
+<p className="text-sm text-slate-500 flex items-center gap-1.5 mt-1"><I name="schedule" size={15} className="flex-shrink-0"/>Mon–Sat, 10 AM–2 PM, 3–5 PM</p>
+<p className="text-sm text-slate-500 flex items-center gap-1.5 mt-0.5"><I name="account_balance_wallet" size={15} className="flex-shrink-0"/>Consultation ₹{doctor.fee}</p>
 </div>
-{p.label}
+</div>
+<div className="flex items-center gap-1.5 mt-3 pt-3 text-sm text-slate-400" style={{borderTop:'1px solid #F1F5F9'}}><I name="apartment" size={15} className="flex-shrink-0"/>{(doctor.hospital||'').replace(' · ',', ')}</div>
+</div>
+{/* Who is it for */}
+<h3 className="text-xl font-bold text-slate-800 mb-3">Who is it for?</h3>
+<div className="flex gap-4 mb-6 overflow-x-auto no-scroll pb-1">
+{patients.map((p,i)=>{const sel=patient===p.name;return(
+<button key={p.name+i} onClick={()=>setPatient(p.name)} className="flex flex-col items-center gap-2 flex-shrink-0" style={{width:72}}>
+<div className="relative" style={{width:60,height:60}}>
+<div className="rounded-full flex items-center justify-center text-base font-bold" style={{width:60,height:60,background:p.color+'22',color:p.color,boxShadow:sel?'0 0 0 2.5px #3B82F6':'0 0 0 1.5px #E5E7EB'}}>{p.initials}</div>
+{sel&&<div className="absolute rounded-full flex items-center justify-center" style={{width:20,height:20,bottom:-1,right:-1,background:'#3B82F6',border:'3px solid #F6F8FB'}}><I name="check" size={11} className="text-white"/></div>}
+</div>
+<span className="text-xs truncate" style={{maxWidth:72,color:sel?'#3B82F6':'#64748B',fontWeight:sel?600:500}}>{i===0?'You':p.short}</span>
 </button>
-))}
+);})}
 </div>
-<h3 className="text-base font-bold text-slate-800 mb-3">Pick a time</h3>
-<div className="flex gap-2 mb-4 overflow-x-auto no-scroll pb-1">
-{dates.map((d,i)=>(
-<button key={i} onClick={()=>{setSelDate(i);setSelTime(null)}} className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${selDate===i?'bg-pri-600 text-white':'bg-white border border-slate-200 text-slate-600'}`}>{fmtD(d)}</button>
-))}
+{/* Pick a day */}
+<div className="flex items-center justify-between mb-3"><h3 className="text-xl font-bold text-slate-800">Pick a day</h3><span className="text-sm font-medium text-slate-400">{monthLbl}</span></div>
+<div className="flex gap-2.5 mb-6 overflow-x-auto no-scroll pb-1">
+{dates.map((d,i)=>{const sel=selDate===i;return(
+<button key={i} onClick={()=>{setSelDate(i);setSelTime('')}} className="flex-shrink-0 flex flex-col items-center justify-center rounded-2xl" style={{width:58,height:70,background:sel?'#3B82F6':'#fff',border:sel?'none':'1px solid #E2E8F0'}}>
+<span className="text-xs font-medium" style={{color:sel?'rgba(255,255,255,0.85)':'#94A3B8'}}>{d.toLocaleDateString('en-IN',{weekday:'short'})}</span>
+<span className="text-xl font-bold mt-0.5" style={{color:sel?'#fff':'#1E293B'}}>{d.getDate()}</span>
+</button>
+);})}
 </div>
-<div className="flex flex-wrap gap-2 mb-6">
-{times.map((t,i)=>(
-<button key={t} onClick={()=>setSelTime(i)} className={`px-3 py-2 rounded-xl text-sm font-medium border ${selTime===i?'bg-pri-600 text-white border-pri-600':'bg-white text-slate-600 border-slate-200'}`}>{t}</button>
-))}
+{/* Pick a time */}
+<h3 className="text-xl font-bold text-slate-800 mb-3">Pick a time</h3>
+<div className="flex items-center gap-1.5 mb-2"><I name="wb_sunny" size={16} className="text-slate-400"/><span className="text-sm font-semibold text-slate-500">Morning</span></div>
+<div className="grid grid-cols-3 gap-2.5 mb-5">{morning.map(t=><TimeBtn key={t} t={t}/>)}</div>
+<div className="flex items-center gap-1.5 mb-2"><I name="partly_cloudy_day" size={16} className="text-slate-400"/><span className="text-sm font-semibold text-slate-500">Afternoon</span></div>
+<div className="grid grid-cols-3 gap-2.5 mb-6">{afternoon.map(t=><TimeBtn key={t} t={t}/>)}</div>
+{/* Symptoms */}
+<div className="flex items-baseline justify-between mb-1"><h3 className="text-xl font-bold text-slate-800">Describe your symptoms</h3><span className="text-sm text-slate-400">Optional</span></div>
+<p className="text-sm text-slate-400 mb-3">Shared with your doctor before the visit, as what you told them. The doctor will still ask you.</p>
+<div className="flex flex-wrap gap-2 mb-3">{APPT_SYMPTOMS.map(s=><Pill key={s} label={s} active={symptoms.includes(s)} onClick={()=>toggleSym(s)}/>)}{symptoms.filter(s=>!APPT_SYMPTOMS.includes(s)).map(s=><Pill key={s} label={s} active={true} onClick={()=>toggleSym(s)}/>)}</div>
+<div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 border border-slate-200 mb-6">
+<I name="search" size={20} className="text-slate-400"/>
+<input type="text" value={symSearch} onChange={e=>setSymSearch(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')addCustomSym()}} placeholder="Search other symptoms, e.g. burning" className="flex-1 bg-transparent outline-none text-sm text-slate-700"/>
+{symSearch.trim()&&<button onClick={addCustomSym} className="text-sm font-semibold text-blue-500">Add</button>}
+</div>
+{/* Since when */}
+<p className="text-sm font-medium text-slate-500 mb-2">Since when? (optional)</p>
+<div className="flex flex-wrap gap-2 mb-6">{APPT_SINCE.map(s=><Pill key={s} label={s} active={since===s} onClick={()=>setSince(since===s?'':s)}/>)}</div>
+{/* Notes */}
+<p className="text-sm font-medium text-slate-500 mb-2">Anything else the doctor should know? (optional)</p>
+<textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="In your own words" rows={3} className="w-full bg-white rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none border border-slate-200 resize-none mb-5" style={{boxSizing:'border-box'}}/>
+{/* Info */}
+<div className="flex items-start gap-2 p-4 rounded-2xl mb-2" style={{background:'#EFF6FF',border:'1px solid #DBEAFE'}}>
+<I name="info" size={18} style={{color:'#3B82F6'}} className="flex-shrink-0"/>
+<p className="text-sm text-slate-600">In-person visit. The doctor confirms it next — you'll be notified.</p>
 </div>
 </div>
-<div className="sticky bottom-0 px-4 py-3 bg-white border-t border-slate-100" style={{paddingBottom:'max(12px,env(safe-area-inset-bottom))'}}>
-<button onClick={confirm} disabled={selTime===null} className={`w-full py-3.5 rounded-2xl text-sm font-bold text-center ${selTime!==null?'bg-pri-600 text-white hover:bg-pri-700 transition':'bg-slate-200 text-slate-400'}`}>Confirm booking</button>
+{/* Sticky Book now */}
+<div className="px-4 py-3" style={{background:'#F6F8FB',borderTop:'1px solid #E8ECF2',paddingBottom:'max(12px,env(safe-area-inset-bottom,12px))'}}>
+<button onClick={confirm} disabled={!selTime} className="w-full py-3.5 rounded-2xl text-base font-bold text-center transition-colors" style={selTime?{background:'#3B82F6',color:'#fff'}:{background:'#94A3B8',color:'#fff'}}>Book now</button>
 </div>
 </div>
 );};
@@ -5898,9 +6068,7 @@ return(
 {tab==='chats'&&<div className="px-4 py-4">
 {chatDocs.length===0?<p className="text-center text-slate-400 py-8 text-sm">No chat history</p>:chatDocs.map(d=>(
 <button key={d.id} onClick={()=>nav('doc-chat',d)} className="w-full text-left bg-slate-50 rounded-2xl p-4 mb-2 flex items-center gap-3">
-<div className="w-12 h-12 rounded-full flex items-center justify-center text-slate-500 font-semibold" style={{backgroundColor:'#E5E7EB'}}>
-{d.name.split(' ').filter(w=>w!=='Dr.').map(w=>w[0]).slice(0,2).join('')}
-</div>
+<DocAvatar id={d.id} size={48}/>
 <div className="flex-1 min-w-0">
 <p className="text-sm font-bold text-slate-800">{d.name}</p>
 <p className="text-xs text-slate-400 truncate">{d.lastMsg.text}</p>
