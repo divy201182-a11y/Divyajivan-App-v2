@@ -1303,10 +1303,11 @@ const DocAvatar=({id,size=54,round=true})=>{
 const n=String((((((id||1)-1)%40)+40)%40)+1).padStart(2,'0');
 return <img src={'doctor-avatars/doctor-'+n+'.svg'} alt="" width={size} height={size} style={{flexShrink:0,display:'block',borderRadius:round?'50%':'20%',objectFit:'cover'}}/>;
 };
+let LAST_HOSPITAL='BAPS Pramukh Swami · Surat';
 const ConsultScreen=({nav,onDetail,onBack})=>{
 const[specFilter,setSpecFilter]=useState('All');
 const[searchQ,setSearchQ]=useState('');
-const[hospFilter,setHospFilter]=useState('BAPS Pramukh Swami · Surat');
+const[hospFilter,setHospFilter]=useState(LAST_HOSPITAL);
 const[hospSheetOpen,setHospSheetOpen]=useState(false);
 const[hospSearch,setHospSearch]=useState('');
 const[specSheetOpen,setSpecSheetOpen]=useState(false);
@@ -1388,7 +1389,7 @@ return(
 {hospCards.filter(hc=>!hospSearch||hc.name.toLowerCase().includes(hospSearch.toLowerCase())).map(hc=>{
 const sel=hc.raw===hospFilter;
 return(
-<button key={hc.raw} onClick={()=>{setHospFilter(hc.raw);setHospSheetOpen(false)}} className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left" style={{border:sel?'1.5px solid #3B82F6':'1px solid #E2E8F0',background:sel?'#EFF6FF':'#FFFFFF'}}>
+<button key={hc.raw} onClick={()=>{setHospFilter(hc.raw);LAST_HOSPITAL=hc.raw;setHospSheetOpen(false)}} className="w-full flex items-center gap-3 rounded-2xl px-4 py-3 text-left" style={{border:sel?'1.5px solid #3B82F6':'1px solid #E2E8F0',background:sel?'#EFF6FF':'#FFFFFF'}}>
 <img src="hospital-icon.png" alt="" className="w-10 h-10 rounded-xl flex-shrink-0" style={{objectFit:'contain'}}/>
 <div className="flex-1 min-w-0">
 <p className="text-sm font-bold text-slate-800 truncate">{hc.name}</p>
