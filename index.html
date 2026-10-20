@@ -4475,11 +4475,11 @@ const syncUserToBackend=async(user)=>{try{const name=user.user_metadata?.full_na
 const syncOrderToBackend=async(order)=>{try{const{data:u}=await _supa.from('app_users').select('id,name').eq('email',order.user_email||'').maybeSingle();const oname=(u&&u.name)||order.user_name||(order.user_email?order.user_email.split('@')[0]:'')||'';const{data:o}=await _supa.from('app_orders').insert({user_id:u?.id||null,order_number:order.order_id,total_amount:order.total_amount||0}).select('id').single();if(o){await _supa.from('app_orders').update({delivery_address:order.delivery_address||null,payment_method:order.payment_method||null}).eq('id',o.id);await _supa.from('app_orders').update({user_name:oname||null,user_email:order.user_email||null}).eq('id',o.id);if(order.items)for(const i of order.items)await _supa.from('app_order_items').insert({order_id:o.id,medicine_name:i.medicine_name,quantity:i.quantity||1,price:i.price||0})}if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'place_order',details:'Order '+order.order_id+', ₹'+(order.total_amount||0)})}catch(e){}};
 const syncAppointmentToBackend=async(appt)=>{try{const email=window._djAuthEmail||'';const{data:u}=await _supa.from('app_users').select('id,name').eq('email',email).maybeSingle();const{data:a}=await _supa.from('app_appointments').insert({user_id:u?.id||null,doctor_name:appt.doctor_name,specialty:appt.specialty||'',date:appt.date,time:appt.time,type:appt.type||'in-person',patient_name:appt.patient_name||''}).select('id').single();if(a)await _supa.from('app_appointments').update({symptoms:appt.symptoms&&appt.symptoms.length?appt.symptoms:null,since_when:appt.since||null,notes:appt.notes||null,hospital:appt.hospital||null}).eq('id',a.id);if(u)await _supa.from('app_activity_log').insert({user_id:u.id,user_name:u.name,action:'book_appointment',details:'With '+appt.doctor_name+' on '+appt.date})}catch(e){}};
 const _djUserId=async(email)=>{try{const{data}=await _supa.from('app_users').select('id').eq('email',email||'').maybeSingle();return data?data.id:null}catch(e){return null}};
-const syncProfileToBackend=async(profile,email)=>{try{if(!profile)return;const id=await _djUserId(email);if(!id)return;await _supa.from('app_users').update({age:(profile.age!==''&&profile.age!=null)?String(profile.age):null,gender:profile.gender||null,blood_group:profile.bloodGroup||null,dob:profile.dob||null,member_id:profile.memberId||null,profile_address:profile.address||null}).eq('id',id)}catch(e){}};
-const syncFamilyToBackend=async(family,email)=>{try{const id=await _djUserId(email);if(!id)return;await _supa.from('app_family_members').delete().eq('user_id',id);if(family&&family.length)await _supa.from('app_family_members').insert(family.map(f=>({user_id:id,member_key:String(f.id),name:f.name||'',age:(f.age!==''&&f.age!=null)?String(f.age):null,gender:f.gender||''})))}catch(e){}};
-const syncVitalsToBackend=async(vitals,email)=>{try{if(!vitals)return;const id=await _djUserId(email);if(!id)return;for(const k of Object.keys(vitals)){const arr=vitals[k];if(!arr||!arr.length)continue;const last=arr[arr.length-1];const val=k==='bp'?(last.systolic+'/'+last.diastolic):String(last.value);await _supa.from('app_vitals').upsert({user_id:id,vital_key:k,value:val,recorded_at:new Date(last.date||Date.now()).toISOString()},{onConflict:'user_id,vital_key'})}}catch(e){}};
-const syncInsuranceToBackend=async(ins,email)=>{try{const id=await _djUserId(email);await _supa.from('app_insurance').insert({user_id:id,kind:ins.kind||'enquiry',company:ins.company||null,plan_name:ins.plan_name||null,policy_number:ins.policy_number||null,cover_amount:ins.cover_amount||null,details:ins.details||null});if(id){const{data:u}=await _supa.from('app_users').select('name').eq('id',id).maybeSingle();await _supa.from('app_activity_log').insert({user_id:id,user_name:u?u.name:'',action:'insurance_enquiry',details:(ins.plan_name||ins.company||ins.kind||'Insurance')})}}catch(e){}};
-const syncStatusesFromSupabase=async(currentOrders,setOrders,currentApts,setAppointments)=>{try{const email=window._djAuthEmail||'';if(!email)return;const{data:u}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(!u)return;const{data:sOrders}=await _supa.from('app_orders').select('order_number,status').eq('user_id',u.id);if(sOrders&&sOrders.length&&currentOrders.length){let changed=false;const updated=currentOrders.map(o=>{const match=sOrders.find(s=>s.order_number===o.id);if(match&&match.status!==o.status){changed=true;return{...o,status:match.status}}return o});if(changed)setOrders(updated)}const{data:sApts}=await _supa.from('app_appointments').select('doctor_name,date,time,status').eq('user_id',u.id);if(sApts&&sApts.length&&currentApts.length){let changed=false;const updated=currentApts.map(a=>{const match=sApts.find(s=>s.doctor_name===a.doctor&&s.time===a.time);if(match&&match.status!==a.status){changed=true;return{...a,status:match.status}}return a});if(changed)setAppointments(updated)}}catch(e){}};
+const syncProfileToBackend=async(profile,email)=>{try{if(!profile)return;const id=await _djUserId(email);if(!id)return;await _supa.from('app_users').update({age:(profile.age!==''&&profile.age!=null)?String(profile.age):null,gender:profile.gender||null,blood_group:profile.bloodGroup||null,dob:profile.dob||null,member_id:profile.memberId||null,profile_address:profile.address||null}).eq('id',id)}catch(e){console.warn('[dj-sync] profile',e)}};
+const syncFamilyToBackend=async(family,email)=>{try{const id=await _djUserId(email);if(!id)return;await _supa.from('app_family_members').delete().eq('user_id',id);if(family&&family.length)await _supa.from('app_family_members').insert(family.map(f=>({user_id:id,member_key:String(f.id),name:f.name||'',age:(f.age!==''&&f.age!=null)?String(f.age):null,gender:f.gender||''})))}catch(e){console.warn('[dj-sync] family',e)}};
+const syncVitalsToBackend=async(vitals,email)=>{try{if(!vitals)return;const id=await _djUserId(email);if(!id)return;for(const k of Object.keys(vitals)){const arr=vitals[k];if(!arr||!arr.length)continue;const last=arr[arr.length-1];const val=k==='bp'?(last.systolic+'/'+last.diastolic):String(last.value);await _supa.from('app_vitals').upsert({user_id:id,vital_key:k,value:val,recorded_at:new Date(last.date||Date.now()).toISOString()},{onConflict:'user_id,vital_key'})}}catch(e){console.warn('[dj-sync] vitals',e)}};
+const syncInsuranceToBackend=async(ins,email)=>{try{const id=await _djUserId(email);await _supa.from('app_insurance').insert({user_id:id,kind:ins.kind||'enquiry',company:ins.company||null,plan_name:ins.plan_name||null,policy_number:ins.policy_number||null,cover_amount:ins.cover_amount||null,details:ins.details||null});if(id){const{data:u}=await _supa.from('app_users').select('name').eq('id',id).maybeSingle();await _supa.from('app_activity_log').insert({user_id:id,user_name:u?u.name:'',action:'insurance_enquiry',details:(ins.plan_name||ins.company||ins.kind||'Insurance')})}}catch(e){console.warn('[dj-sync] insurance',e)}};
+const syncStatusesFromSupabase=async(currentOrders,setOrders,currentApts,setAppointments)=>{try{const email=window._djAuthEmail||'';if(!email)return;const{data:u}=await _supa.from('app_users').select('id').eq('email',email).maybeSingle();if(!u)return;const{data:sOrders}=await _supa.from('app_orders').select('order_number,status').eq('user_id',u.id);if(sOrders&&sOrders.length&&currentOrders.length){let changed=false;const updated=currentOrders.map(o=>{const match=sOrders.find(s=>s.order_number===o.id);if(match&&match.status!==o.status){changed=true;return{...o,status:match.status}}return o});if(changed)setOrders(updated)}const{data:sApts}=await _supa.from('app_appointments').select('doctor_name,date,time,status').eq('user_id',u.id);if(sApts&&sApts.length&&currentApts.length){let changed=false;const updated=currentApts.map(a=>{const match=sApts.find(s=>s.doctor_name===a.doctor&&s.time===a.time);if(match&&match.status!==a.status){changed=true;return{...a,status:match.status}}return a});if(changed)setAppointments(updated)}}catch(e){console.warn('[dj-sync] status',e)}};
 
 const LeafDecor=({style})=>(
 <svg viewBox="0 0 120 160" style={{position:'absolute',opacity:0.15,...style}} width="120">
@@ -6097,7 +6097,35 @@ return(
 );};
 
 
-ReactDOM.render(<App/>,document.getElementById('root'));
+/* ── ERROR BOUNDARY ──
+   A render error anywhere below used to unmount the whole app to a blank
+   white screen. This catches it and shows a branded recovery screen so the
+   user can reload (or reload after clearing local data) instead. */
+class ErrorBoundary extends React.Component{
+  constructor(p){super(p);this.state={hasError:false};}
+  static getDerivedStateFromError(){return{hasError:true};}
+  componentDidCatch(err,info){try{console.error('[app crash]',err,info&&info.componentStack);}catch(e){}}
+  render(){
+    if(!this.state.hasError)return this.props.children;
+    const btn={display:'block',width:'100%',padding:16,borderRadius:16,fontSize:16,fontWeight:700,cursor:'pointer',textAlign:'center'};
+    return (
+      <div style={{position:'fixed',inset:0,background:'#F5F3EE',display:'flex',alignItems:'center',justifyContent:'center',padding:24}}>
+        <div style={{background:'#fff',borderRadius:24,padding:'40px 32px',maxWidth:380,width:'100%',boxShadow:'0 2px 20px rgba(0,0,0,0.06)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:24}}>
+            <img src="logo.webp" alt="Divyajivan" style={{width:40,height:40,borderRadius:10,objectFit:'cover'}}/>
+            <span style={{fontSize:18,fontWeight:700}}><span style={{color:'#1993E0'}}>Divya</span><span style={{color:'#87BC26'}}>Jivan</span></span>
+          </div>
+          <h1 style={{fontSize:28,fontWeight:800,color:'#1a1a1a',lineHeight:1.15,marginBottom:14,letterSpacing:'-0.5px'}}>Something went wrong</h1>
+          <p style={{fontSize:15,color:'#888',lineHeight:1.5,marginBottom:28}}>The app hit an unexpected error. Your saved data is safe. Reloading usually fixes it.</p>
+          <button onClick={()=>window.location.reload()} style={{...btn,border:'none',background:'#1a1a1a',color:'#fff',marginBottom:12}}>Reload app</button>
+          <button onClick={()=>{try{sessionStorage.clear()}catch(e){}window.location.reload()}} style={{...btn,background:'#fff',color:'#1a1a1a',border:'1.5px solid #e0e0e0'}}>Reload &amp; clear temporary data</button>
+        </div>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<ErrorBoundary><App/></ErrorBoundary>,document.getElementById('root'));
 </script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
