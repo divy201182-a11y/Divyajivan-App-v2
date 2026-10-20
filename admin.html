@@ -202,6 +202,21 @@ tr:hover td{background:rgba(232,229,223,.35)}
 </head>
 <body>
 
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon-wrap"><span class="material-icons-outlined">admin_panel_settings</span></div>
+      <h2>Admin Sign In</h2>
+      <p>Divyajivan Healthcare Dashboard</p>
+    </div>
+    <div class="login-field"><label>Email</label><input type="email" id="adm-email" placeholder="you@divyajivanhealth.org" autocomplete="username"/></div>
+    <div class="login-field"><label>Password</label><input type="password" id="adm-pw" placeholder="Password" autocomplete="current-password"/></div>
+    <button class="login-btn" id="adm-login-btn">Sign In</button>
+    <div class="login-error" id="adm-error"></div>
+    <div class="login-footer">Authorized personnel only</div>
+  </div>
+</div>
+
 <div class="sidebar" id="admin-sidebar">
 <div class="sidebar-header">
 <h1><span class="material-icons-outlined">local_hospital</span><span style="color:#1993E0">Divya</span><span style="color:#87BC26">Jivan</span></h1>
@@ -311,13 +326,43 @@ tr:hover td{background:rgba(232,229,223,.35)}
 </div>
 
 <script>
-(function(){try{if(sessionStorage.getItem('dj_admin')!=='1'){window.location.href='/';return}}catch(e){window.location.href='/';return}})();
-
 const _supa=window.supabase.createClient('https://qkdrrqgsajqkibxqbtkw.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrZHJycWdzYWpxa2lieHFidGt3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNTMxNTcsImV4cCI6MjEwNzYyOTE1N30.0kZ-3b_oZU1Fw_dpX6pj2LpUxlwgett2Xp64v8NVEVs');
 
-function adminLogout(){
-  try{sessionStorage.removeItem('dj_admin')}catch(e){}
-  window.location.href='/';
+// ── Real admin auth: a Supabase session whose app_users row has is_admin=true.
+// Without it, RLS returns nothing, so the dashboard requires a verified admin.
+let _admIv=null;
+function showLogin(msg){document.getElementById('login-overlay').classList.remove('hidden');const e=document.getElementById('adm-error');if(e)e.textContent=msg||'';}
+function hideLogin(){document.getElementById('login-overlay').classList.add('hidden');}
+
+async function verifyAdminAndStart(){
+  const {data:{session}}=await _supa.auth.getSession();
+  if(!session){showLogin('');return;}
+  const {data:me}=await _supa.from('app_users').select('is_admin,name,email').eq('auth_id',session.user.id).maybeSingle();
+  if(!me||!me.is_admin){await _supa.auth.signOut();showLogin('This account does not have admin access.');return;}
+  const info=document.querySelector('#admin-profile .al-info');const av=document.querySelector('#admin-profile .al-av');
+  if(info){info.querySelector('h4').textContent=me.name||'Admin';info.querySelector('p').textContent=me.email||session.user.email||'';}
+  if(av)av.textContent=((me.name||'A').split(' ').map(w=>w[0]).join('')||'A').slice(0,2).toUpperCase();
+  hideLogin();
+  loadData();
+  if(!_admIv)_admIv=setInterval(loadData,10000);
+}
+
+async function adminLogin(){
+  const email=(document.getElementById('adm-email').value||'').trim().toLowerCase();
+  const pw=document.getElementById('adm-pw').value||'';
+  const errEl=document.getElementById('adm-error');errEl.textContent='';
+  if(!email||!pw){errEl.textContent='Enter your email and password';return;}
+  const btn=document.getElementById('adm-login-btn');btn.disabled=true;btn.textContent='Signing in…';
+  const {error}=await _supa.auth.signInWithPassword({email,password:pw});
+  btn.disabled=false;btn.textContent='Sign In';
+  if(error){errEl.textContent=error.message||'Sign in failed';return;}
+  verifyAdminAndStart();
+}
+
+async function adminLogout(){
+  try{await _supa.auth.signOut()}catch(e){}
+  if(_admIv){clearInterval(_admIv);_admIv=null;}
+  showLogin('');
 }
 
 const actionConfig={
@@ -532,8 +577,10 @@ function showSection(id){
   loadData();
 }
 
-loadData();
-setInterval(loadData,10000);
+document.getElementById('adm-login-btn').addEventListener('click',adminLogin);
+document.getElementById('adm-pw').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+document.getElementById('adm-email').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
+verifyAdminAndStart();
 </script>
 </body>
 </html>
